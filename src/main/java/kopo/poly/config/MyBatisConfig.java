@@ -1,16 +1,17 @@
 package kopo.poly.config;
 
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 
-@Configuration
+@SpringBootConfiguration
 @MapperScan(basePackages = "kopo.poly.mapper")
 public class MyBatisConfig {
 
@@ -22,6 +23,12 @@ public class MyBatisConfig {
                 new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml")
         );
         factoryBean.setTypeAliasesPackage("kopo.poly.dto");
+
+        // ✅ 카멜 케이스 자동 매핑 설정 추가
+        Configuration myBatisConfig = new Configuration();
+        myBatisConfig.setMapUnderscoreToCamelCase(true);  // user_id -> userId
+        factoryBean.setConfiguration(myBatisConfig);
+
         return factoryBean.getObject();
     }
 

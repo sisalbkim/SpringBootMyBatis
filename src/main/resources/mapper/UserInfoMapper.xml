@@ -3,11 +3,11 @@
 
 <mapper namespace="kopo.poly.mapper.IUserInfoMapper">
 
-    <select id="getEmailExists2" parameterType="UserInfoDTO" resultType="UserInfoDTO">
-        SELECT
-            IF(COUNT(USER_ID) > 0, 'Y', 'N') AS EXISTS_YN
-        FROM USER_INFO
-    </select>
+<!--   <select id="getEmailExists2" parameterType="UserInfoDTO" resultType="UserInfoDTO">-->
+<!--        SELECT-->
+<!--            IF(COUNT(USER_ID) > 0, 'Y', 'N') AS EXISTS_YN-->
+<!--        FROM USER_INFO-->
+<!--    </select>-->
 
     <select id="getUserIdExists" parameterType="UserInfoDTO" resultType="UserInfoDTO">
         SELECT
@@ -37,7 +37,7 @@
             EMAIL
         FROM USER_INFO
         WHERE 1=1
-        <if test="userId != null and userId != '' ">
+        <if test="userId neq null and userId neq '' ">
             AND USER_ID = #{userId}
         </if>
         AND USER_NAME = #{userName}

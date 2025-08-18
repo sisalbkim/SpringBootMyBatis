@@ -30,7 +30,7 @@ public class NoticeController {
     @GetMapping(value = "noticeList")
     public String noticeList(HttpSession session, ModelMap model) throws Exception {
 
-        log.info("{}.noticeList Start!", this.getClass().getSimpleName());
+        log.info("{}.noticeList Start!", this.getClass().getName());
 
         session.setAttribute("SESSION_USER_ID", "USER01");
 
@@ -112,12 +112,33 @@ public class NoticeController {
         NoticeDTO pDTO = new NoticeDTO();
         pDTO.setNoticeSeq(nSeq);
 
-        NoticeDTO rDTO = Optional.ofNullable(noticeService.getNoticeInfo(pDTO, false))
+        NoticeDTO rDTO = Optional.ofNullable(noticeService.getNoticeInfo(pDTO, true))
                 .orElseGet(NoticeDTO::new);
 
         model.addAttribute("rDTO", rDTO);
 
         log.info("{}.noticeInfo End!", this.getClass().getName());
+
+        return "notice/noticeInfo";
+    }
+
+    @GetMapping(value = "noticeEditInfo")
+    public String noticeEditInfo(HttpServletRequest request, ModelMap model) throws Exception {
+        log.info("{}.noticeEditInfo Start!", this.getClass().getName());
+
+        String nSeq = CmmUtil.nvl(request.getParameter("nSeq"));
+
+        log.info("nSeq : {}", nSeq);
+
+        NoticeDTO pDTO = new NoticeDTO();
+        pDTO.setNoticeSeq(nSeq);
+
+        NoticeDTO rDTO = Optional.ofNullable(noticeService.getNoticeInfo(pDTO,false))
+                .orElseGet(NoticeDTO::new);
+
+        model.addAttribute("rDTO", rDTO);
+
+        log.info("{}.noticeEditInfo End!", this.getClass().getName());
 
         return "notice/noticeEditInfo";
     }

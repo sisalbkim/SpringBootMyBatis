@@ -3,6 +3,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="kopo.poly.dto.NoticeDTO" %>
 <%@ page import="kopo.poly.util.CmmUtil" %>
+
 <%
     // NoticeController 함수에서 model 객체에 저장된 값 불러오기
     List<NoticeDTO> rList = (List<NoticeDTO>) request.getAttribute("rList");
@@ -23,7 +24,12 @@
     </script>
 </head>
 <body>
-<h2>공지사항</h2>
+<div style="padding-left: 10px;">
+    <h2 style="margin: 0;">
+        <a href="/html/index.html" style="text-decoration: none; color: black;">메인화면으로</a>
+    </h2>
+    <h2 style="margin: 0;">공지사항</h2>
+</div>
 <hr/>
 <br/>
 <div class="divTable minimalistBlack">

@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>메인화면</title>
+    <style>
+        body {
+            background-image: url('/images/bg.png'); /* 이미지 경로 */
+            background-size: cover;                  /* 전체화면 꽉 채우기 */
+            background-repeat: no-repeat;            /* 반복 안 함 */
+            background-position: center center;      /* 가운데 정렬 */
+        }
+    </style>
+</head>
+<body>
+<h1>메인 페이지입니다.</h1>
+
+<button type="button" onclick="location.href='/notice/noticeList'">공지사항</button>
+<button type="button" onclick="location.href='/user/login'">로그인</button>
+<button type="button" onclick="location.href='/user/userRegForm'">회원가입</button>
+<button type="button" onclick="location.href='/user/searchUserId'">아이디 찾기</button>
+<button type="button" onclick="location.href='/user/searchPassword'">비밀번호 찾기</button>
+
+</body>
+</html>

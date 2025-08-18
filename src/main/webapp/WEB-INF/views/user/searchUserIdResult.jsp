@@ -26,7 +26,7 @@
     <meta charset="UTF-8">
     <title><%=msg%>></title>
     <link rel="stylesheet" href="/css/table.css"/>
-    <script type="text/javascript" src="/js/jquery-6.7.1.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.7.1.min.js"></script>
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -42,7 +42,7 @@
 <hr/>
 <br/>
 <form id="f">
-    <div class="minimalistBlack">
+    <div class="divTable minimalistBlack">
         <div class="divTableBody">
             <div class="divTableRow">
                 <div class="divTableCell">

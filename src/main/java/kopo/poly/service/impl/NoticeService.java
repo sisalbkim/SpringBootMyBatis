@@ -51,6 +51,7 @@ public class NoticeService implements INoticeService {
 
     }
 
+    @Transactional
     @Override
     public void deleteNoticeInfo(NoticeDTO pDTO) throws Exception {
 

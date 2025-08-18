@@ -153,7 +153,7 @@
                 return;
             }
 
-            if (f.email.value == "") {
+            if (f.email.value === "") {
                 alert("이메일을 입력하세요.");
                 f.email.focus();
                 return;
@@ -183,7 +183,7 @@
                 return;
             }
             $.ajax({
-                url: "/user/InsertUserInfo",
+                url: "/user/insertUserInfo",
                 type: "post",
                 dataType: "JSON",
                 data: $("#f").serialize(),
@@ -205,6 +205,9 @@
     </script>
 </head>
 <body>
+<h2 style="margin: 0;">
+    <a href="/html/index.html" style="text-decoration: none; color: black;">메인화면으로</a>
+</h2>
 <h2>회원 가입하기</h2>
 <hr/>
 <br/>

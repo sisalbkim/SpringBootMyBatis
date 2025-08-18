@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/mail")
 @RequiredArgsConstructor
 @Controller
+
 public class MailController{
+
     private final IMailService mailService;
 
     @GetMapping(value = "mailForm")

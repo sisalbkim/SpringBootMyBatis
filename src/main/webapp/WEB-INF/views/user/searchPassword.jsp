@@ -43,7 +43,13 @@
   </script>
 </head>
 <body>
-<h2>비밀번호 찾기</h2>
+<div style="padding-left: 10px;">
+  <h2 style="margin: 0;">
+    <a href="/html/index.html" style="text-decoration: none; color: black;">메인화면</a>
+  </h2>
+  <h2 style="margin: 0;">비밀번호 찾기</h2>
+</div>
+
 <hr/>
 <br/>
 <form id="f">

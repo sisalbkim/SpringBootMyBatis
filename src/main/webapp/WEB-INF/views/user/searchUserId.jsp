@@ -1,19 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="kopo.poly.dto.UserInfoDTO"%>
-<%@ page import="kopo.poly.util.CmmUtil"%>
 
-<%
-    UserInfoDTO rDTO = (UserInfoDTO) request.getAttribute("rDTO");
-
-    String msg = "";
-
-    if(CmmUtil.nvl(rDTO.getUserId()).length() > 0) {
-        msg = CmmUtil.nvl(rDTO.getUserName()) + " 회원님의 " + CmmUtil.nvl(rDTO.getUserId()) + "입니다.";
-
-    } else {
-        msg = "아이디가 존재하지 않습니다.";
-    }
-%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,9 +15,6 @@
                 location.href = "/user/login";
             })
 
-            $("btnLogin").on("click", function () {
-                location.href = "/user/login";
-            })
 
             $("#btnSearchUserId").on("click", function () {
                 let f = document.getElementById("f");
@@ -57,6 +40,14 @@
     </script>
 </head>
 <body>
+<div style="padding-left: 10px;">
+    <h2 style="margin: 0;">
+        <a href="/html/index.html" style="text-decoration: none; color: black;">메인화면</a>
+    </h2>
+    <h2 style="margin: 0;">아이디 찾기</h2>
+</div>
+<hr/>
+<br/>
 <form id="f">
     <div class="divTable minimalistBlack">
         <div class="divTableBody">

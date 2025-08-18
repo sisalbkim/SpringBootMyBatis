@@ -156,10 +156,10 @@ public class UserInfoController {
     }
 
     @ResponseBody
-    @PostMapping(value = "loginproc")
-    public MsgDTO loginproc(HttpServletRequest request, HttpSession session) {
+    @PostMapping(value = "loginProc")
+    public MsgDTO loginProc(HttpServletRequest request, HttpSession session) {
 
-        log.info("{}.loginproc Start!", this.getClass().getName());
+        log.info("{}.loginProc Start!", this.getClass().getName());
 
         int res = 0;
         String msg = "";
@@ -170,12 +170,15 @@ public class UserInfoController {
         try{
             String userId = CmmUtil.nvl(request.getParameter("userId"));
             String password = CmmUtil.nvl(request.getParameter("password"));
+            String encPassword = EncryptUtil.encHashSHA256(password);
 
-            log.info("userId : {} / password : {}", userId, password);
+            log.info("userId : {} / password : {} / encPassword : {} ", userId, password , encPassword);
 
             pDTO = new UserInfoDTO();
 
             pDTO.setUserId(userId);
+
+            pDTO.setPassword(encPassword);
 
             pDTO.setPassword(EncryptUtil.encHashSHA256(password));
 
@@ -202,7 +205,7 @@ public class UserInfoController {
             dto.setResult(res);
             dto.setMsg(msg);
 
-            log.info("{}.loginproc End!", this.getClass().getName());
+            log.info("{}.loginProc End!", this.getClass().getName());
         }
 
         return dto;
@@ -219,9 +222,9 @@ public class UserInfoController {
 
     @GetMapping(value = "searchUserId")
     public String searchUserId() {
-        log.info("{}.searchUserId Start!", this.getClass().getName());
+        log.info("{}.user/searchUserId Start!", this.getClass().getName());
 
-        log.info("{}.searchUserId End!", this.getClass().getName());
+        log.info("{}.user/searchUserId End!", this.getClass().getName());
 
         return "user/searchUserId";
     }
@@ -306,6 +309,8 @@ public class UserInfoController {
             UserInfoDTO pDTO = new UserInfoDTO();
             pDTO.setUserId(newPassword);
             pDTO.setPassword(EncryptUtil.encHashSHA256(password));
+
+
 
             userInfoService.newPasswordProc(pDTO);
 

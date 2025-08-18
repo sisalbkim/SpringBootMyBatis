@@ -15,4 +15,6 @@ public interface IUserInfoService {
     int insertUserInfo(UserInfoDTO pDTO) throws Exception;
 
     int newPasswordProc(UserInfoDTO pDTO) throws Exception;
+
+
 }

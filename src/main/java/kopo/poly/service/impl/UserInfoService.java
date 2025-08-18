@@ -40,20 +40,9 @@ public class UserInfoService implements IUserInfoService {
     public UserInfoDTO getEmailExists(UserInfoDTO pDTO) throws Exception{
 
         log.info("{}.emailAuth start!", this.getClass().getName());
-//
-        String rawEmail = CmmUtil.nvl(pDTO.getEmail());
-        String decryptedEmail = EncryptUtil.decAES128CBC(rawEmail);
 
-//        if (!EmailUtil.isValidEmail(decryptedEmail)) {
-//            log.warn("유효하지 않은 이메일 형식입니다: {}", decryptedEmail);
-//
-//            UserInfoDTO rDTO = new UserInfoDTO();
-//            rDTO.setExistsYn("N");
-//            return rDTO;
-//        }
-//
 
-        UserInfoDTO rDTO = userInfoMapper.getEmailExists2(pDTO);
+        UserInfoDTO rDTO = Optional.ofNullable(userInfoMapper.getEmailExists(pDTO)).orElseGet(UserInfoDTO::new);
         log.info("pDTO : {}", pDTO);
         log.info("rDTO : {}", rDTO);
         //existsYn 값 확인
@@ -101,7 +90,7 @@ public class UserInfoService implements IUserInfoService {
 
             mDTO.setTitle("회원가입을 축하드립니다.");
 
-            mDTO.setContents(CmmUtil.nvl(pDTO.getUserName()) + "님의 화원가입을 진심으로 축하드립니다.");
+            mDTO.setContents(CmmUtil.nvl(pDTO.getUserName()) + "님의 회원가입을 진심으로 축하드립니다.");
 
             mailService.doSendMail(mDTO);
         } else {
