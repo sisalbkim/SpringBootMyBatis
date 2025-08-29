@@ -18,7 +18,7 @@
 
       $("#btnSend").on("click", function () {
 
-        location.href = "/html/index.html";
+        location.href = "../../../html/index.jsp";
       })
     })
   </script>
@@ -26,7 +26,7 @@
 <body>
 <div style="display: flex; align-items: center; gap: 50px; padding-left: 10px;">
   <h2 style="margin: 0;">
-    <a href="/html/index.html" style="text-decoration: none; color: black;">메인화면으로</a>
+    <a href="/html/index.jsp" style="text-decoration: none; color: black;">메인화면으로</a>
   </h2>
   <h2 style="margin: 0;">로그인완료</h2>
 </div>

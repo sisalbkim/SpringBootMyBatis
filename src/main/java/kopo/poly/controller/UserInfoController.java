@@ -165,42 +165,40 @@ public class UserInfoController {
         String msg = "";
         MsgDTO dto;
 
-        UserInfoDTO pDTO;
-
-        try{
+        try {
             String userId = CmmUtil.nvl(request.getParameter("userId"));
             String password = CmmUtil.nvl(request.getParameter("password"));
             String encPassword = EncryptUtil.encHashSHA256(password);
 
-            log.info("userId : {} / password : {} / encPassword : {} ", userId, password , encPassword);
+            log.info("userId : {} / encPassword : {}", userId, encPassword);
 
-            pDTO = new UserInfoDTO();
-
+            UserInfoDTO pDTO = new UserInfoDTO();
             pDTO.setUserId(userId);
-
             pDTO.setPassword(encPassword);
-
-            pDTO.setPassword(EncryptUtil.encHashSHA256(password));
 
             UserInfoDTO rDTO = userInfoService.getLogin(pDTO);
 
             if (!CmmUtil.nvl(rDTO.getUserId()).isEmpty()) {
-
                 res = 1;
-
                 msg = "로그인이 성공했습니다.";
 
-                session.setAttribute("SS_USER_ID", userId);
-                session.setAttribute("SS_USER_NAME", CmmUtil.nvl(rDTO.getUserName()));
+                // ✅ 세션에 사용자 정보 저장
+                session.setAttribute("SS_USER_ID", rDTO.getUserId());
+                session.setAttribute("SS_USER_NAME", rDTO.getUserName());
+
+                log.info("세션 저장 완료: SS_USER_ID={}, SS_USER_NAME={}",
+                        rDTO.getUserId(), rDTO.getUserName());
+
             } else {
                 msg = "아이디와 비밀번호가 올바르지 않습니다.";
             }
-        } catch (Exception e) {
 
+        } catch (Exception e) {
             msg = "시스템 문제로 로그인이 실패했습니다.";
             res = 2;
-            log.info(e.toString());
-        }finally {
+            log.error("loginProc 오류: ", e);
+
+        } finally {
             dto = new MsgDTO();
             dto.setResult(res);
             dto.setMsg(msg);
@@ -209,6 +207,19 @@ public class UserInfoController {
         }
 
         return dto;
+    }
+
+    @GetMapping(value = "logout")
+    public String logout(HttpSession session) {
+        log.info("{}.logout Start!", this.getClass().getName());
+
+        // ✅ 세션 전체 초기화
+        session.invalidate();
+
+        log.info("{}.logout End!", this.getClass().getName());
+
+        // 로그아웃 후 메인으로 이동
+        return "redirect:/html/index.jsp";
     }
 
     @GetMapping(value = "loginResult")
@@ -328,6 +339,8 @@ public class UserInfoController {
 
         return "user/newPasswordResult";
     }
+
+
 
 
 }

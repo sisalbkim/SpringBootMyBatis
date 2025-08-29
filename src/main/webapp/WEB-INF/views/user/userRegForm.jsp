@@ -206,7 +206,7 @@
 </head>
 <body>
 <h2 style="margin: 0;">
-    <a href="/html/index.html" style="text-decoration: none; color: black;">메인화면으로</a>
+    <a href="/html/index.jsp" style="text-decoration: none; color: black;">메인화면으로</a>
 </h2>
 <h2>회원 가입하기</h2>
 <hr/>
