@@ -339,6 +339,29 @@ public class UserInfoController {
 
         return "user/newPasswordResult";
     }
+    // ✅ 채팅방 목록 페이지
+    @GetMapping(value = "/chat/list")
+    public String chatList(ModelMap model, HttpSession session) {
+        log.info("{}.chatList Start!", this.getClass().getName());
+
+        // 세션에서 사용자 정보 가져오기 (로그인 한 경우만 접근 가능하게)
+        String userId = (String) session.getAttribute("SS_USER_ID");
+        String userName = (String) session.getAttribute("SS_USER_NAME");
+
+        if (userId == null) {
+            // 로그인 안 했으면 로그인 페이지로 리다이렉트
+            return "redirect:/html/index.jsp";
+        }
+
+        // 일단은 채팅방 데이터 없이 빈 리스트 전달
+        // (Service 만들어서 DB에서 불러오게 개선 가능)
+        model.addAttribute("chatList", null);
+
+        log.info("{}.chatList End!", this.getClass().getName());
+
+        return "chat/chatList"; // chatList.jsp 로 이동
+    }
+
 
 
 

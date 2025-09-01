@@ -101,7 +101,7 @@
 <!-- 상단 메뉴 -->
 <div class="navbar">
     <a href="#">메인 화면</a>
-    <a href="#">채팅</a>
+    <a href="/chat/list">채팅</a>
     <a href="#">설정</a>
 
     <%-- ✅ 로그인 여부에 따라 분기 --%>
