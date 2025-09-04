@@ -1,4 +1,5 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,32 +11,28 @@
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
-            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #eee;
+            padding: 15px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
         }
 
         .container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .empty-box {
-            background: #fff;
-            border-radius: 10px;
-            padding: 40px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .chat-list {
-            max-width: 600px;
+            max-width: 700px;
             margin: 20px auto;
+            padding: 10px;
         }
 
+        /* 채팅방 카드 */
         .chat-room {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background: #fff;
             padding: 15px;
             margin-bottom: 10px;
@@ -43,11 +40,53 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             cursor: pointer;
             transition: background 0.2s;
-            text-align: center;
         }
 
         .chat-room:hover {
-            background: #f0f0f0;
+            background: #f5f5f5;
+        }
+
+        .chat-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: #ccc;
+            border-radius: 50%;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .chat-text {
+            text-align: left;
+        }
+
+        .chat-text h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .chat-text p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .chat-menu {
+            font-size: 20px;
+            color: #555;
+        }
+
+        .empty-box {
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .create-btn {
@@ -58,18 +97,13 @@
             color: #fff;
             border-radius: 5px;
             text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .create-btn:hover {
-            background: #45a049;
         }
     </style>
 </head>
 <body>
 
 <!-- 상단 메뉴 -->
-<div class="navbar" style="background:#eee; padding:15px; display:flex; justify-content:space-evenly;">
+<div class="navbar">
     <a href="/html/index.jsp">메인 화면</a>
     <a href="/chat/list">채팅</a>
     <a href="#">설정</a>
@@ -77,30 +111,36 @@
 </div>
 
 <div class="container">
-    <c:choose>
-        <!-- 채팅방이 없을 경우 -->
-        <c:when test="${empty chatRoomList}">
-            <div class="empty-box">
-                <div style="font-size: 50px; margin-bottom: 10px;">💬</div>
-                <h2>아직 개설된 채팅방이 없습니다</h2>
-                <p>새로운 채팅방을 만들어보세요!</p>
-                <a href="/chat/create" class="create-btn">새 채팅방 만들기</a>
-            </div>
-        </c:when>
+    <%
+        java.util.List<kopo.poly.dto.ChatDTO> chatList =
+                (java.util.List<kopo.poly.dto.ChatDTO>) request.getAttribute("chatList");
 
-        <!-- 채팅방이 있을 경우 -->
-        <c:otherwise>
-            <div class="chat-list">
-                <c:forEach var="room" items="${chatRoomList}">
-                    <div class="chat-room" onclick="location.href='/chat/room/${room.roomId}'">
-                        <h3>${room.roomName}</h3>
-                        <!-- 참여자 수 대신 버튼 -->
-                        <a href="/chat/create" class="create-btn">새 채팅방 만들기</a>
-                    </div>
-                </c:forEach>
+        if (chatList == null || chatList.isEmpty()) {
+    %>
+    <div class="empty-box">
+        <div style="font-size: 50px; margin-bottom: 10px;">💬</div>
+        <h2>아직 개설된 채팅방이 없습니다</h2>
+        <p>새로운 채팅방을 만들어보세요!</p>
+        <a href="/chat/create" class="create-btn">새 채팅방 만들기</a>
+    </div>
+    <%
+    } else {
+        for (kopo.poly.dto.ChatDTO room : chatList) {
+    %>
+    <div class="chat-room" onclick="location.href='/chat/room/<%=room.getRoomId()%>'">
+        <div class="chat-info">
+            <div class="chat-avatar"></div>
+            <div class="chat-text">
+                <h3><%=room.getRoomName()%></h3>
+                <p><%=room.getAddr1()%> <%=room.getAddr2()%></p>
             </div>
-        </c:otherwise>
-    </c:choose>
+        </div>
+        <div class="chat-menu">⋯</div>
+    </div>
+    <%
+            }
+        }
+    %>
 </div>
 
 </body>

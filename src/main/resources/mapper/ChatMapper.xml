@@ -5,16 +5,75 @@
 
 <mapper namespace="kopo.poly.mapper.IChatMapper">
 
+    <!-- 전체 채팅방 목록 -->
     <select id="getChatList" resultType="kopo.poly.dto.ChatDTO">
         SELECT
             chat_room_id AS roomId,
-            location_id  AS locationId,
             room_name    AS roomName,
             reg_id       AS regId,
-            reg_dt       AS regDt
+            reg_dt       AS regDt,
+            addr1        AS addr1,
+            addr2        AS addr2,
+            user_id      AS userId,
+            user_count   AS userCount
         FROM CHAT_ROOM
         ORDER BY reg_dt DESC
     </select>
 
+    <!-- 주소로 채팅방 검색 -->
+    <select id="getChatListByAddr" parameterType="string" resultType="kopo.poly.dto.ChatDTO">
+        SELECT
+            chat_room_id AS roomId,
+            room_name    AS roomName,
+            reg_id       AS regId,
+            reg_dt       AS regDt,
+            addr1        AS addr1,
+            addr2        AS addr2,
+            user_id      AS userId,
+            user_count   AS userCount
+        FROM CHAT_ROOM
+        WHERE CONCAT(IFNULL(addr1,''), ' ', IFNULL(addr2,'')) LIKE CONCAT('%', #{addr}, '%')
+        ORDER BY reg_dt DESC
+    </select>
+
+    <!-- 채팅방 생성 -->
+    <insert id="createRoom" parameterType="kopo.poly.dto.ChatDTO">
+        INSERT INTO CHAT_ROOM (room_name, addr1, addr2, user_id, user_count, reg_id, reg_dt)
+        VALUES (#{roomName}, #{addr1}, #{addr2}, #{userId}, 1, #{userId}, NOW())
+    </insert>
+
+    <!-- 채팅방 단일 조회 -->
+    <select id="getRoomInfo" parameterType="int" resultType="kopo.poly.dto.ChatDTO">
+        SELECT
+            chat_room_id AS roomId,
+            room_name    AS roomName,
+            reg_id       AS regId,
+            reg_dt       AS regDt,
+            addr1        AS addr1,
+            addr2        AS addr2,
+            user_id      AS userId,
+            user_count   AS userCount
+        FROM CHAT_ROOM
+        WHERE chat_room_id = #{value}
+    </select>
+
+    <!-- 메시지 목록 조회 -->
+    <select id="getMessages" parameterType="int" resultType="kopo.poly.dto.ChatMessageDTO">
+        SELECT
+            msg_id       AS msgId,
+            chat_room_id AS chatRoomId,
+            user_id      AS userId,
+            message,
+            send_dt      AS sendTime
+        FROM CHAT_MESSAGE
+        WHERE chat_room_id = #{value}
+        ORDER BY send_dt ASC
+    </select>
+
+    <!-- 메시지 저장 -->
+    <insert id="insertMessage" parameterType="kopo.poly.dto.ChatMessageDTO">
+        INSERT INTO CHAT_MESSAGE (chat_room_id, user_id, message)
+        VALUES (#{chatRoomId}, #{userId}, #{message})
+    </insert>
 
 </mapper>
