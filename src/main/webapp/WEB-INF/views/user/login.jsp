@@ -118,8 +118,9 @@
                     success: function (json) {
                         if(json.result === 1) {
                             alert(json.msg);
-                            location.href = "/user/loginResult";
-                        } else {
+                            location.href = "/html/index.jsp"; // ✅ 메인화면으로 이동
+                        }
+                        else {
                             alert(json.msg);
                             $("#userId").focus();
                         }

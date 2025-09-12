@@ -22,7 +22,14 @@ import java.util.Optional;
 @RequestMapping(value = "/user")
 @RequiredArgsConstructor
 @Controller
-public class UserInfoController {
+public class
+
+
+
+
+
+
+UserInfoController {
 
     private final IUserInfoService userInfoService;
 
