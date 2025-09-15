@@ -27,4 +27,6 @@ public interface IChatMapper {
 
     // ✅ 메시지 저장
     int insertMessage(ChatMessageDTO pDTO) throws Exception;
+
+    List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception;
 }

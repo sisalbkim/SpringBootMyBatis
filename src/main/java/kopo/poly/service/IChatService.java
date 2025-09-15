@@ -13,6 +13,6 @@ public interface IChatService {
     ChatDTO getRoomInfo(int chatRoomId) throws Exception;
     List<ChatMessageDTO> getMessages(int chatRoomId) throws Exception;
     int insertMessage(ChatMessageDTO pDTO) throws Exception;
-
+    List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception;
 
 }
