@@ -20,7 +20,7 @@
         }
         .chat-header { background: #6a5acd; color: #fff; padding: 15px; display: flex; justify-content: space-between; }
         .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
-        .message { max-width: 70%; margin-bottom: 12px; display: flex; align-items: flex-end; }
+        .message { margin-bottom: 12px; display: flex; align-items: flex-end; }
         .message.left { justify-content: flex-start; }
         .message.left .bubble { background: #fff; border-radius: 15px 15px 15px 0; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .message.right { justify-content: flex-end; }
@@ -41,11 +41,21 @@
 <div class="chat-messages" id="chatBody">
     <c:forEach var="msg" items="${msgList}">
         <div class="message ${msg.userId eq sessionScope.SS_USER_ID ? 'right' : 'left'}">
-            <span class="nickname">${msg.userId}</span>
-            <div class="bubble">${msg.message}</div>
+            <!-- 내가 보낸 메시지는 오른쪽에, 남이 보낸 건 왼쪽에 -->
+            <c:choose>
+                <c:when test="${msg.userId eq sessionScope.SS_USER_ID}">
+                    <div class="bubble">${msg.message}</div>
+                    <span class="nickname">${msg.userId}</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="nickname">${msg.userId}</span>
+                    <div class="bubble">${msg.message}</div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </c:forEach>
 </div>
+
 
 
 <div class="chat-input">
