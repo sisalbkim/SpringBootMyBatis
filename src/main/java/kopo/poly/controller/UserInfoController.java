@@ -340,6 +340,13 @@ UserInfoController {
 
         return "user/newPasswordResult";
     }
+
+    @GetMapping("/loginModal")
+    public String loginModal() {
+        return "user/loginModal"; // /WEB-INF/jsp/user/loginModal.jsp (prefix/suffix로 렌더)
+    }
+
+
     // ✅ 채팅방 목록 페이지
     @GetMapping(value = "/chat/list")
     public String chatList(ModelMap model, HttpSession session) {

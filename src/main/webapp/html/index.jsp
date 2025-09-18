@@ -153,50 +153,6 @@
             align-items: center;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            width: 700px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .modal-content input {
-            width: 90%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .modal-content button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            background: #2b6cb0;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .modal-content button:hover {
-            background: #1e4d7a;
-        }
 
         /* 트리거(아이콘+이름) */
         .account{ position: relative; display:inline-flex; align-items:center; }
@@ -311,165 +267,67 @@
     }
 </script>
 
-<!-- 로그인 모달 -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeLogin()">&times;</span>
-        <div style="text-align:center; margin-bottom:15px;">
-            <img src="/images/logo.png" alt="Atalk 로고" style="height:50px;">
-        </div>
-        <h2 style="text-align:center; margin:10px 0;">로그인</h2>
-        <form id="loginForm" style="text-align:center;">
-            <input type="text" name="userId" id="userId" placeholder="아이디" style="width:70%; margin:8px 0;"><br>
-            <input type="password" name="password" id="password" placeholder="비밀번호" style="width:70%; margin:8px 0;"><br>
-            <button id="btnLogin" type="button" style="width:75%; margin-top:10px;">로그인</button>
-        </form>
-        <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:14px;">
-            <div>
-                <span id="btnUserReg" style="color:#2b6cb0; cursor:pointer; text-decoration:underline;">
-                    아직 계정이 없다면?
-                </span>
-            </div>
-            <div>
-                <span id="btnSearchUserId" style="color:#2b6cb0; cursor:pointer; margin-right:10px; text-decoration:underline;">아이디 찾기</span>
-                /
-                <span id="btnSearchPassword" style="color:#2b6cb0; cursor:pointer; margin-left:10px; text-decoration:underline;">비밀번호 찾기</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 회원가입 모달 -->
-<div id="signupModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeSignup()">&times;</span>
-        <div style="text-align:center; margin-bottom:15px;">
-            <img src="/images/logo.png" alt="Atalk 로고" style="height:50px;">
-        </div>
-        <h2 style="text-align:center; margin:10px 0;">회원가입</h2>
-        <form id="signupForm">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin:8px 0;">
-                <input type="text" name="userId" id="signupUserId" placeholder="아이디" style="flex:1; margin-right:5px;">
-                <button id="btnUserId" type="button" style="width:120px;">중복체크</button>
-            </div>
-            <input type="text" name="userName" placeholder="이름" style="width:100%; margin:8px 0;">
-            <input type="password" name="password" placeholder="비밀번호" style="width:100%; margin:8px 0;">
-            <input type="password" name="password2" placeholder="비밀번호 확인" style="width:100%; margin:8px 0;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin:8px 0;">
-                <input type="email" name="email" id="signupEmail" placeholder="이메일주소" style="flex:1; margin-right:5px;">
-                <button id="btnEmail" type="button" style="width:120px;">인증</button>
-            </div>
-            <input type="text" name="authNumber" id="authNumber" placeholder="메일 인증번호" style="width:100%; margin:8px 0;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin:8px 0;">
-                <input type="text" name="addr1" id="addr1" placeholder="주소" style="flex:1; margin-right:5px;">
-                <button id="btnAddr" type="button" style="width:120px;">우편번호</button>
-            </div>
-            <input type="text" name="addr2" id="addr2" placeholder="상세주소" style="width:100%; margin:8px 0;">
-            <button id="btnSend" type="button" style="width:100%; margin-top:15px;">회원가입</button>
-        </form>
-    </div>
-</div>
-
 <script>
-    function openLogin() { document.getElementById("loginModal").style.display = "flex"; }
-    function closeLogin() { document.getElementById("loginModal").style.display = "none"; }
-    function openSignup() { document.getElementById("signupModal").style.display = "flex"; }
-    function closeSignup() { document.getElementById("signupModal").style.display = "none"; }
-    window.onclick = function(event) {
-        if (event.target === document.getElementById("loginModal")) closeLogin();
-        if (event.target === document.getElementById("signupModal")) closeSignup();
-    }
+    window.openLogin = function(){
+        const URL = '/user/loginModal'; // 컨트롤러 매핑 주소
+        $('#modal-root').load(URL, function(resp, status){
+            if(status !== 'success'){ alert('모달 로드 실패: ' + URL); return; }
 
-    $(document).ready(function () {
-        $("#btnLogin").on("click", function(){
-            let f = document.getElementById("loginForm");
-            if (f.userId.value === "") { alert("아이디를 입력하세요."); f.userId.focus(); return; }
-            if (f.password.value === "") { alert("비밀번호를 입력하세요."); f.password.focus(); return; }
+            const $m = $('#authModal');
+            $m.css('display','flex');
+            $('body').css('overflow','hidden');
 
-            $.ajax({
-                url:"/user/loginProc",
-                type:"post",
-                dataType:"JSON",
-                data: $("#loginForm").serialize(),
-                success: function (json) {
-                    if(json.result === 1) {
-                        alert(json.msg);
-                        location.href = "/"; // ✅ 로그인 성공 시 메인으로 이동
-                    } else {
-                        alert(json.msg);
-                        $("#userId").focus();
+            // 닫기
+            function close(){
+                $m.remove();
+                $('body').css('overflow','');
+                $(document).off('keydown.auth');
+            }
+            $m.on('click', '.modal-close, .modal-overlay', close);
+            $(document).on('keydown.auth', e => { if(e.key==='Escape') close(); });
+
+            // 🔽🔽🔽 여기부터 '로그인 버튼/엔터키' 등 모달 내부 동작 바인딩
+            $m.on('click', '#btnLogin', function(){
+                const f = $m.find('#loginForm')[0];
+                if (!f.userId.value.trim()) { alert('아이디를 입력하세요.'); f.userId.focus(); return; }
+                if (!f.password.value.trim()) { alert('비밀번호를 입력하세요.'); f.password.focus(); return; }
+
+                const $btn = $(this).prop('disabled', true).text('로그인 중…');
+                $.ajax({
+                    url:'/user/loginProc', type:'post', dataType:'json', data: $(f).serialize(),
+                    complete: () => $btn.prop('disabled', false).text('로그인'),
+                    success: function(json){
+                        if(json.result === 1){
+                            alert(json.msg);
+                            close();
+                            location.href = '/';
+                        }else{
+                            alert(json.msg);
+                            $m.find('#userId').focus();
+                        }
                     }
-                }
-            })
-        });
-
-        $("#btnUserReg").on("click", function() { closeLogin(); openSignup(); });
-        $("#btnSearchUserId").on("click", function () { location.href = "/user/searchUserId"; });
-        $("#btnSearchPassword").on("click", function () { location.href = "/user/searchPassword"; });
-
-        $("#btnUserId").on("click", function () {
-            let f = document.getElementById("signupForm");
-            if (f.userId.value === "") { alert("아이디를 입력하세요."); f.userId.focus(); return; }
-            $.ajax({
-                url: "/user/getUserIdExists",
-                type: "post",
-                dataType: "JSON",
-                data: $("#signupForm").serialize(),
-                success: function (json) {
-                    if (json.existsYn === "Y") { alert("이미 가입된 아이디입니다."); f.userId.focus(); }
-                    else { alert("사용 가능한 아이디입니다."); userIdCheck = "N"; }
-                }
+                });
             });
-        });
 
-        $("#btnEmail").on("click", function () {
-            let f = document.getElementById("signupForm");
-            if (f.email.value === "") { alert("이메일을 입력하세요."); f.email.focus(); return; }
-            $.ajax({
-                url: "/user/getEmailExists",
-                type: "post",
-                dataType: "JSON",
-                data: $("#signupForm").serialize(),
-                success: function (json) {
-                    if (json.existsYn === "Y") { alert("이미 가입된 이메일입니다."); f.email.focus(); }
-                    else { alert("이메일로 인증번호가 발송되었습니다."); emailAuthNumber = json.authNumber; }
-                }
+            // 엔터키로도 로그인
+            $m.on('keydown', '#loginForm input', function(e){
+                if(e.key === 'Enter'){ e.preventDefault(); $m.find('#btnLogin').click(); }
             });
-        });
 
-        $("#btnAddr").on("click", function () {
-            let f = document.getElementById("signupForm");
-            new daum.Postcode({
-                oncomplete: function (data) { f.addr1.value = "(" + data.zonecode + ") " + data.address; }
-            }).open();
-        });
+            // 회원가입/찾기(일단 페이지 이동)
+            $m.on('click', '#btnUserReg',      () => { close(); location.href='/user/userRegForm'; });
+            $m.on('click', '#btnSearchUserId', () => { close(); location.href='/user/searchUserId'; });
+            $m.on('click', '#btnSearchPassword',() => { close(); location.href='/user/searchPassword'; });
+            // 🔼🔼🔼 여기까지
 
-        $("#btnSend").on("click", function () {
-            let f = document.getElementById("signupForm");
-            if (f.userId.value === "" || userIdCheck !== "N") { alert("아이디를 확인하세요."); return; }
-            if (f.userName.value === "") { alert("이름을 입력하세요."); return; }
-            if (f.password.value === "" || f.password2.value === "") { alert("비밀번호를 입력하세요."); return; }
-            if (f.password.value !== f.password2.value) { alert("비밀번호가 일치하지 않습니다."); return; }
-            if (f.email.value === "") { alert("이메일을 입력하세요."); return; }
-            if (f.authNumber.value === "" || f.authNumber.value != emailAuthNumber) { alert("이메일 인증번호가 올바르지 않습니다."); return; }
-            if (f.addr1.value === "") { alert("주소를 입력하세요."); return; }
-            if (f.addr2.value === "") { alert("상세주소를 입력하세요."); return; }
-
-            $.ajax({
-                url: "/user/insertUserInfo",
-                type: "post",
-                dataType: "JSON",
-                data: $("#signupForm").serialize(),
-                success: function (json) {
-                    if(json.result === 1) {
-                        alert(json.msg);
-                        closeSignup();
-                        openLogin();
-                    } else { alert(json.msg); }
-                }
-            });
+            // 첫 포커스
+            $m.find('input,button,select,textarea').first().trigger('focus');
         });
-    });
+    };
 </script>
+
+
+<div id="modal-root"></div>
+
 </body>
 </html>
