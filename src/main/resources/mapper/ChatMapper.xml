@@ -76,4 +76,16 @@
         VALUES (#{chatRoomId}, #{userId}, #{message})
     </insert>
 
+    <select id="getMessageList" parameterType="int" resultType="kopo.poly.dto.ChatMessageDTO">
+        SELECT
+            msg_id       AS msgId,
+            chat_room_id AS chatRoomId,
+            user_id      AS userId,
+            message,
+            DATE_FORMAT(send_dt, '%Y-%m-%d %H:%i:%s') AS sendTime
+        FROM CHAT_MESSAGE
+        WHERE chat_room_id = #{chatRoomId}
+        ORDER BY send_dt ASC
+    </select>
+
 </mapper>

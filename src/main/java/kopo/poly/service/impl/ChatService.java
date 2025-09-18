@@ -71,4 +71,9 @@ public class ChatService implements IChatService {
         log.info("{}.insertMessage End!", this.getClass().getName());
         return res;
     }
+
+    @Override
+    public List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception {
+        return chatMapper.getMessageList(chatRoomId);
+    }
 }

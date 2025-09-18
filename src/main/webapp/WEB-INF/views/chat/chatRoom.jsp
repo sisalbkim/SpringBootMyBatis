@@ -1,10 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>${roomInfo.roomName}</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <style>
+        /* === 기존 스타일 그대로 === */
         body {
             margin: 0;
             font-family: 'Apple SD Gothic Neo', Arial, sans-serif;
@@ -13,98 +18,17 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* 상단 바 */
-        .chat-header {
-            background: #6a5acd;
-            color: #fff;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 16px;
-        }
-
-        .chat-header .title {
-            font-weight: bold;
-        }
-
-        /* 메시지 영역 */
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 말풍선 공통 */
-        .message {
-            max-width: 70%;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: flex-end;
-        }
-
-        /* 상대방 */
-        .message.left {
-            justify-content: flex-start;
-        }
-        .message.left .bubble {
-            background: #fff;
-            border-radius: 15px 15px 15px 0;
-            padding: 10px 14px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        /* 나 */
-        .message.right {
-            justify-content: flex-end;
-        }
-        .message.right .bubble {
-            background: #2f8f83;
-            color: #fff;
-            border-radius: 15px 15px 0 15px;
-            padding: 10px 14px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        /* 닉네임 */
-        .nickname {
-            font-size: 11px;
-            color: #666;
-            margin: 0 5px;
-        }
-
-        /* 입력창 */
-        .chat-input {
-            display: flex;
-            padding: 10px;
-            background: #fff;
-            border-top: 1px solid #ccc;
-        }
-
-        .chat-input input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            outline: none;
-        }
-
-        .chat-input button {
-            margin-left: 8px;
-            padding: 10px 15px;
-            background: #6a5acd;
-            border: none;
-            border-radius: 50%;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .chat-input button:hover {
-            background: #5a4abc;
-        }
+        .chat-header { background: #6a5acd; color: #fff; padding: 15px; display: flex; justify-content: space-between; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
+        .message { margin-bottom: 12px; display: flex; align-items: flex-end; }
+        .message.left { justify-content: flex-start; }
+        .message.left .bubble { background: #fff; border-radius: 15px 15px 15px 0; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .message.right { justify-content: flex-end; }
+        .message.right .bubble { background: #2f8f83; color: #fff; border-radius: 15px 15px 0 15px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .nickname { font-size: 11px; color: #666; margin: 0 5px; }
+        .chat-input { display: flex; padding: 10px; background: #fff; border-top: 1px solid #ccc; }
+        .chat-input input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .chat-input button { margin-left: 8px; padding: 10px 15px; background: #6a5acd; border: none; border-radius: 50%; color: #fff; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -114,23 +38,80 @@
     <div class="menu">☰</div>
 </div>
 
-<div class="chat-messages">
-    <!-- 예시 메시지 -->
-    <div class="message left">
-        <div class="bubble">야.. 뭐함?</div>
-        <span class="nickname">친구A</span>
-    </div>
-
-    <div class="message right">
-        <span class="nickname">나</span>
-        <div class="bubble">몰라</div>
-    </div>
+<div class="chat-messages" id="chatBody">
+    <c:forEach var="msg" items="${msgList}">
+        <div class="message ${msg.userId eq sessionScope.SS_USER_ID ? 'right' : 'left'}">
+            <!-- 내가 보낸 메시지는 오른쪽에, 남이 보낸 건 왼쪽에 -->
+            <c:choose>
+                <c:when test="${msg.userId eq sessionScope.SS_USER_ID}">
+                    <div class="bubble">${msg.message}</div>
+                    <span class="nickname">${msg.userId}</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="nickname">${msg.userId}</span>
+                    <div class="bubble">${msg.message}</div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </c:forEach>
 </div>
+
+
 
 <div class="chat-input">
-    <input type="text" placeholder="채팅을 입력하세요"/>
-    <button>➤</button>
+    <input type="text" id="msgInput" placeholder="채팅을 입력하세요"/>
+    <button id="sendBtn">➤</button>
 </div>
 
+<script>
+    let stompClient = null;
+
+    function connect() {
+        let socket = new SockJS("${pageContext.request.contextPath}/ws-chat");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log("Connected: " + frame);
+            stompClient.subscribe("/topic/public", function(message) {
+                let msg = JSON.parse(message.body);
+                showMessage(msg.userId, msg.message, msg.userId === "${sessionScope.SS_USER_ID}");
+            });
+        });
+    }
+
+    function sendMessage() {
+        let text = document.getElementById("msgInput").value;
+        if (!text) return;
+
+        let msg = {
+            userId: "${sessionScope.SS_USER_ID}",
+            message: text,
+            chatRoomId: ${roomInfo.roomId}
+        };
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(msg));
+        document.getElementById("msgInput").value = "";
+    }
+
+    function showMessage(sender, content, isMe) {
+        let chatBody = document.getElementById("chatBody");
+        let side = isMe ? "right" : "left";
+        let msgHtml =
+            '<div class="message ' + side + '">' +
+            (!isMe ? '<span class="nickname">' + sender + '</span>' : '') +
+            '<div class="bubble">' + content + '</div>' +
+            (isMe ? '<span class="nickname">' + sender + '</span>' : '') +
+            '</div>';
+
+        chatBody.innerHTML += msgHtml;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    document.getElementById("sendBtn").onclick = sendMessage;
+    document.getElementById("msgInput").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") sendMessage();
+    });
+
+    window.onload = connect;
+</script>
 </body>
 </html>

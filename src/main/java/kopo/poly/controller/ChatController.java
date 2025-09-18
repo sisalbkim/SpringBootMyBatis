@@ -80,9 +80,6 @@ public class ChatController {
             return "redirect:/html/index.jsp";
         }
 
-        // 👉 주소 합치기
-        String fullAddr = addr1 + " " + addr2;
-
         ChatDTO pDTO = new ChatDTO();
         pDTO.setRoomName(roomName);
         pDTO.setAddr1(addr1);
@@ -91,12 +88,10 @@ public class ChatController {
 
         chatService.createRoom(pDTO);
 
-        // 👉 URL 인코딩 (한글 깨짐/에러 방지)
-        String encodedAddr = java.net.URLEncoder.encode(fullAddr, java.nio.charset.StandardCharsets.UTF_8);
-
-        // 방 생성 후 목록으로 이동 (검색 결과까지 보여주기)
-        return "redirect:/chat/list?addr=" + encodedAddr;
+        // ✅ 방 생성 후 전체 목록으로 이동 (addr 파라미터 제거)
+        return "redirect:/chat/list";
     }
+
 
 
     /** 채팅방 입장 */
@@ -107,23 +102,27 @@ public class ChatController {
 
         String userId = (String) session.getAttribute("SS_USER_ID");
 
-        // 로그인 안 됐으면 로그인 페이지로 리다이렉트
         if (userId == null) {
             return "redirect:/user/login";
         }
 
-        // 로그인 된 경우 → 채팅방 정보 불러오기
         ChatDTO rDTO = chatService.getRoomInfo(roomId);
 
         if (rDTO == null) {
             model.addAttribute("msg", "존재하지 않는 채팅방입니다.");
             model.addAttribute("url", "/chat/list");
-            return "redirect"; // 공통 redirect 페이지 있으면 거기로
+            return "redirect";
         }
 
+        // ✅ 메시지 기록 조회 추가
+        List<ChatMessageDTO> msgList = chatService.getMessageList(roomId);
+
         model.addAttribute("roomInfo", rDTO);
-        return "chat/chatRoom"; // 채팅방 JSP
+        model.addAttribute("msgList", msgList);
+
+        return "chat/chatRoom";
     }
+
 
 
     /** 메시지 전송 */
@@ -146,6 +145,8 @@ public class ChatController {
         // 전송 후 해당 채팅방 다시 로딩
         return "redirect:/chat/room/" + chatRoomId;
     }
+
+
 
     @GetMapping("/test")
     public String testPage() {
