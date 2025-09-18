@@ -80,9 +80,6 @@ public class ChatController {
             return "redirect:/html/index.jsp";
         }
 
-        // 👉 주소 합치기
-        String fullAddr = addr1 + " " + addr2;
-
         ChatDTO pDTO = new ChatDTO();
         pDTO.setRoomName(roomName);
         pDTO.setAddr1(addr1);
@@ -91,12 +88,10 @@ public class ChatController {
 
         chatService.createRoom(pDTO);
 
-        // 👉 URL 인코딩 (한글 깨짐/에러 방지)
-        String encodedAddr = java.net.URLEncoder.encode(fullAddr, java.nio.charset.StandardCharsets.UTF_8);
-
-        // 방 생성 후 목록으로 이동 (검색 결과까지 보여주기)
-        return "redirect:/chat/list?addr=" + encodedAddr;
+        // ✅ 방 생성 후 전체 목록으로 이동 (addr 파라미터 제거)
+        return "redirect:/chat/list";
     }
+
 
 
     /** 채팅방 입장 */

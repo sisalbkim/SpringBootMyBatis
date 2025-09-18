@@ -111,6 +111,18 @@
 </div>
 
 <div class="container">
+    <!-- 맨 위에 고정되는 새 채팅방 추가 -->
+    <div class="chat-room" onclick="location.href='/chat/create'">
+        <div class="chat-info">
+            <div class="chat-avatar" style="background:#eee; font-size:24px; color:#666;
+                 display:flex; align-items:center; justify-content:center;">+</div>
+            <div class="chat-text">
+                <h3>새로운 채팅방 추가</h3>
+                <p>새로운 대화를 시작하세요</p>
+            </div>
+        </div>
+    </div>
+
     <%
         java.util.List<kopo.poly.dto.ChatDTO> chatList =
                 (java.util.List<kopo.poly.dto.ChatDTO>) request.getAttribute("chatList");
@@ -125,6 +137,7 @@
     </div>
     <%
     } else {
+        // 채팅방 목록 반복 출력
         for (kopo.poly.dto.ChatDTO room : chatList) {
     %>
     <div class="chat-room" onclick="location.href='/chat/room/<%=room.getRoomId()%>'">
@@ -142,6 +155,9 @@
         }
     %>
 </div>
+
+
+
 
 </body>
 </html>
