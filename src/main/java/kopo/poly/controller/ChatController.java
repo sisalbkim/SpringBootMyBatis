@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 @Slf4j
@@ -22,22 +23,24 @@ public class ChatController {
 
     /** 채팅방 목록 */
     @GetMapping("/list")
-    public String chatList(@RequestParam(required = false) String addr,
+    public String chatList(@RequestParam(required = false) String addr1,
+                           @RequestParam(required = false) String addr2,
                            ModelMap model, HttpSession session) throws Exception {
 
         log.info("ChatController.chatList Start!");
+        log.info("검색 조건 - addr1: {}, addr2: {}", addr1, addr2);
 
         String userId = (String) session.getAttribute("SS_USER_ID");
         log.info("세션 사용자 ID: {}", userId);
 
         List<ChatDTO> rList;
 
-        if (addr == null || addr.isEmpty()) {
+        if (addr1 == null || addr1.isEmpty() || addr2 == null || addr2.isEmpty()) {
             log.info("주소 파라미터 없음 → 전체 채팅방 조회");
             rList = chatService.getChatList();
         } else {
-            log.info("주소 파라미터 존재: {} → 주소 기반 채팅방 조회", addr);
-            rList = chatService.getChatListByAddr(addr);
+            log.info("주소 파라미터 존재 → 주소 기반 채팅방 조회");
+            rList = chatService.getChatListByAddr(addr1, addr2);
         }
 
         if (rList == null || rList.isEmpty()) {
@@ -51,7 +54,6 @@ public class ChatController {
             }
         }
 
-        // JSP에서 참조할 수 있도록 모델에 담기
         model.addAttribute("chatList", rList);
 
         log.info("ChatController.chatList End!");
@@ -88,8 +90,9 @@ public class ChatController {
 
         chatService.createRoom(pDTO);
 
-        // ✅ 방 생성 후 전체 목록으로 이동 (addr 파라미터 제거)
-        return "redirect:/chat/list";
+        // ✅ 검색 조건 유지해서 리다이렉트
+        return "redirect:/chat/list?addr1=" + URLEncoder.encode(addr1, "UTF-8")
+                + "&addr2=" + URLEncoder.encode(addr2, "UTF-8");
     }
 
 

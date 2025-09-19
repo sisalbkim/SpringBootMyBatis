@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 
 @Slf4j
@@ -22,18 +23,35 @@ public class ChatService implements IChatService {
     public List<ChatDTO> getChatList() throws Exception {
         log.info("{}.getChatList Start!", this.getClass().getName());
         List<ChatDTO> rList = chatMapper.getChatList();
+
+        if (rList == null || rList.isEmpty()) {
+            log.warn("조회된 전체 채팅방이 없습니다!");
+        } else {
+            log.info("조회된 전체 채팅방 개수: {}", rList.size());
+        }
+
         log.info("{}.getChatList End!", this.getClass().getName());
         return rList;
     }
 
     /** 주소별 채팅방 목록 */
     @Override
-    public List<ChatDTO> getChatListByAddr(String addr) throws Exception {
+    public List<ChatDTO> getChatListByAddr(String addr1, String addr2) throws Exception {
         log.info("{}.getChatListByAddr Start!", this.getClass().getName());
-        List<ChatDTO> rList = chatMapper.getChatListByAddr(addr);
+        log.info("검색 조건 - addr1: {}, addr2: {}", addr1, addr2);
+
+        List<ChatDTO> rList = chatMapper.getChatListByAddr(addr1, addr2);
+
+        if (rList == null || rList.isEmpty()) {
+            log.warn("조건에 맞는 채팅방이 없습니다! (addr1={}, addr2={})", addr1, addr2);
+        } else {
+            log.info("조회된 조건 채팅방 개수: {}", rList.size());
+        }
+
         log.info("{}.getChatListByAddr End!", this.getClass().getName());
         return rList;
     }
+
 
     /** 채팅방 생성 */
     @Override
