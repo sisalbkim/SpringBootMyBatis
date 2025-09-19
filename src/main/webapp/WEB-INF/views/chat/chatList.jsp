@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>채팅방 목록</title>
     <link rel="stylesheet" href="/css/table.css"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -26,6 +27,22 @@
             max-width: 700px;
             margin: 20px auto;
             padding: 10px;
+        }
+
+        /* ✅ 지역 선택 박스 */
+        #region-select {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        #region-select select,
+        #region-select button {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
         }
 
         /* 채팅방 카드 */
@@ -111,6 +128,21 @@
 </div>
 
 <div class="container">
+
+    <!-- ✅ 지역 선택 UI -->
+    <div id="region-select">
+        <select id="sido">
+            <option value="">시 선택</option>
+        </select>
+        <select id="sigungu">
+            <option value="">구 선택</option>
+        </select>
+        <select id="dong">
+            <option value="">동 선택</option>
+        </select>
+        <button id="searchRoom">검색</button>
+    </div>
+
     <!-- 맨 위에 고정되는 새 채팅방 추가 -->
     <div class="chat-room" onclick="location.href='/chat/create'">
         <div class="chat-info">
@@ -137,7 +169,6 @@
     </div>
     <%
     } else {
-        // 채팅방 목록 반복 출력
         for (kopo.poly.dto.ChatDTO room : chatList) {
     %>
     <div class="chat-room" onclick="location.href='/chat/room/<%=room.getRoomId()%>'">
@@ -156,8 +187,59 @@
     %>
 </div>
 
+<script>
+    $(document).ready(function () {
+        // 1. 시 목록 불러오기
+        $.get("/region/sido", function (data) {
+            data.forEach(function (sido) {
+                $("#sido").append(new Option(sido, sido));
+            });
+        });
 
+        // 2. 시 선택 → 구 목록
+        $("#sido").change(function () {
+            let sido = $(this).val();
+            $("#sigungu").empty().append(new Option("구 선택", ""));
+            $("#dong").empty().append(new Option("동 선택", ""));
+            if (sido) {
+                $.get("/region/sigungu", {sido: sido}, function (data) {
+                    data.forEach(function (gu) {
+                        $("#sigungu").append(new Option(gu, gu));
+                    });
+                });
+            }
+        });
 
+        // 3. 구 선택 → 동 목록
+        $("#sigungu").change(function () {
+            let sido = $("#sido").val();
+            let sigungu = $(this).val();
+            $("#dong").empty().append(new Option("동 선택", ""));
+            if (sigungu) {
+                $.get("/region/dong", {sido: sido, sigungu: sigungu}, function (data) {
+                    data.forEach(function (dong) {
+                        $("#dong").append(new Option(dong, dong));
+                    });
+                });
+            }
+        });
+
+        // 4. 검색 버튼 클릭 시
+        $("#searchRoom").click(function () {
+            let sido = $("#sido").val();
+            let sigungu = $("#sigungu").val();
+            let dong = $("#dong").val();
+
+            if (!sido || !sigungu || !dong) {
+                alert("시/구/동을 모두 선택해주세요!");
+                return;
+            }
+
+            location.href = "/chat/list?addr1=" + encodeURIComponent(sido + " " + sigungu) +
+                "&addr2=" + encodeURIComponent(dong);
+        });
+    });
+</script>
 
 </body>
 </html>
