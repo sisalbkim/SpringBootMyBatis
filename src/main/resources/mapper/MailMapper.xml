@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IMailMapper">
+
+
+    <select id="getMailList" resultType="MailDTO">
+        SELECT MAIL_ID AS mailId,  <!-- ✅ PK 컬럼 추가 -->
+        TO_MAIL AS toMail,
+        TITLE,
+        CONTENTS,
+        DATE_FORMAT(SEND_DT, '%Y-%m-%d %H:%i:%s') AS sendDt
+        FROM MAIL_INFO
+        ORDER BY MAIL_ID DESC
+    </select>
+
+    <select id="getMailInfo" resultType="MailDTO">
+        SELECT MAIL_ID AS mailId,  <!-- ✅ 상세보기에도 추가 -->
+        TO_MAIL AS toMail,
+        TITLE,
+        CONTENTS,
+        DATE_FORMAT(SEND_DT, '%Y-%m-%d %H:%i:%s') AS sendDt
+        FROM MAIL_INFO
+        WHERE MAIL_ID = #{mailId}
+    </select>
+
+    <insert id="insertMailInfo" parameterType="MailDTO">
+        INSERT INTO MAIL_INFO (TO_MAIL, TITLE, CONTENTS)
+        VALUES (#{toMail}, #{title}, #{contents})
+    </insert>
+
+</mapper>
