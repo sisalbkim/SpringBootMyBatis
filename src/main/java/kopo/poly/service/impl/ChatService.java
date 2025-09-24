@@ -94,4 +94,24 @@ public class ChatService implements IChatService {
     public List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception {
         return chatMapper.getMessageList(chatRoomId);
     }
+
+    @Override
+    public int getChatListCount() throws Exception {
+        return chatMapper.getChatListCount();
+    }
+
+    @Override
+    public List<ChatDTO> getChatListPaged(int offset, int pageSize) throws Exception {
+        return chatMapper.getChatListPaged(offset, pageSize);
+    }
+
+    @Override
+    public int getChatListCountByAddr(String addr1, String addr2) throws Exception {
+        return chatMapper.getChatListCountByAddr(addr1, addr2);
+    }
+
+    @Override
+    public List<ChatDTO> getChatListByAddrPaged(String addr1, String addr2, int offset, int pageSize) throws Exception {
+        return chatMapper.getChatListByAddrPaged(addr1, addr2, offset, pageSize);
+    }
 }

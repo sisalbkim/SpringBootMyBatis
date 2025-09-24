@@ -30,4 +30,16 @@ public interface IChatMapper {
     int insertMessage(ChatMessageDTO pDTO) throws Exception;
 
     List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception;
+
+    // ✅ 페이징용
+    int getChatListCount();
+    List<ChatDTO> getChatListPaged(@Param("offset") int offset,
+                                   @Param("pageSize") int pageSize);
+
+    int getChatListCountByAddr(@Param("addr1") String addr1,
+                               @Param("addr2") String addr2);
+    List<ChatDTO> getChatListByAddrPaged(@Param("addr1") String addr1,
+                                         @Param("addr2") String addr2,
+                                         @Param("offset") int offset,
+                                         @Param("pageSize") int pageSize);
 }

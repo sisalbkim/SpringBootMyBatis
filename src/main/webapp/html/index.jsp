@@ -305,11 +305,29 @@
     function openDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
-                alert("선택된 주소: " + data.address);
+                // addr1 = 시/도 + 시/군/구
+                var addr1 = (data.sido || '') + (data.sigungu ? ' ' + data.sigungu : '');
+
+                // 기본 addr2 = 읍/면/동 + 리까지 올 수 있음
+                var addr2 = data.bname || '';
+
+                // ✅ 마지막 단어가 '리'로 끝나면 제거
+                if (addr2.endsWith("리")) {
+                    // 예: "강동면 정동리" → "강동면"
+                    addr2 = addr2.replace(/ [^ ]*리$/, "");
+                }
+
+                // 채팅방 목록으로 이동
+                var url = "/chat/list?addr1=" + encodeURIComponent(addr1)
+                    + "&addr2=" + encodeURIComponent(addr2);
+
+                window.location.href = url;
             }
         }).open();
     }
 </script>
+
+
 
 <!-- 로그인 모달 -->
 <div id="loginModal" class="modal">

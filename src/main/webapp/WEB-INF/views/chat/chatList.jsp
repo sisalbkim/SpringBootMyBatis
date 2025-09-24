@@ -149,6 +149,57 @@
     </div>
 </div>
 
+<div style="text-align:center; margin-top:20px;">
+    <%
+        int currentPage = (int) request.getAttribute("currentPage");
+        int totalPage = (int) request.getAttribute("totalPage");
+        int startPage = (int) request.getAttribute("startPage");
+        int endPage = (int) request.getAttribute("endPage");
+
+        // ✅ 컨트롤러에서 내려준 addr1, addr2 받기
+        String addr1 = (String) request.getAttribute("addr1");
+        String addr2 = (String) request.getAttribute("addr2");
+
+        // ✅ 검색조건 있을 때만 쿼리스트링 생성
+        String queryBase = "";
+        if (addr1 != null && !addr1.isEmpty() && addr2 != null && !addr2.isEmpty()) {
+            queryBase = "addr1=" + java.net.URLEncoder.encode(addr1, "UTF-8")
+                    + "&addr2=" + java.net.URLEncoder.encode(addr2, "UTF-8") + "&";
+        }
+    %>
+
+    <!-- 이전 버튼 -->
+    <% if (currentPage > 1) { %>
+    <a href="?<%=queryBase%>page=<%=currentPage-1%>">이전</a>
+    <% } %>
+
+    <!-- 맨 앞 ... -->
+    <% if (startPage > 1) { %>
+    <a href="?<%=queryBase%>page=1">1</a> ...
+    <% } %>
+
+    <!-- 페이지 번호 -->
+    <% for (int i = startPage; i <= endPage; i++) {
+        if (i == currentPage) { %>
+    <span style="font-weight:bold; color:#4CAF50;"><%=i%></span>
+    <%     } else { %>
+    <a href="?<%=queryBase%>page=<%=i%>"><%=i%></a>
+    <%     }
+    } %>
+
+    <!-- 맨 끝 ... -->
+    <% if (endPage < totalPage) { %>
+    ... <a href="?<%=queryBase%>page=<%=totalPage%>"><%=totalPage%></a>
+    <% } %>
+
+    <!-- 다음 버튼 -->
+    <% if (currentPage < totalPage) { %>
+    <a href="?<%=queryBase%>page=<%=currentPage+1%>">다음</a>
+    <% } %>
+
+</div>
+
+
 <script>
     $(document).ready(function () {
         // 시 목록

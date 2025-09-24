@@ -85,4 +85,36 @@
         ORDER BY send_dt ASC
     </select>
 
+
+    <!-- 전체 카운트 -->
+    <select id="getChatListCount" resultType="int">
+        SELECT COUNT(*) FROM CHAT_ROOM
+    </select>
+
+    <!-- 전체 목록 페이징 -->
+    <select id="getChatListPaged" resultType="kopo.poly.dto.ChatDTO">
+        SELECT *
+        FROM CHAT_ROOM
+        ORDER BY chat_room_id DESC
+            LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 조건별 카운트 -->
+    <select id="getChatListCountByAddr" resultType="int">
+        SELECT COUNT(*)
+        FROM CHAT_ROOM
+        WHERE ADDR1 = #{addr1}
+          AND ADDR2 = #{addr2}
+    </select>
+
+    <!-- 조건별 페이징 -->
+    <select id="getChatListByAddrPaged" resultType="kopo.poly.dto.ChatDTO">
+        SELECT *
+        FROM CHAT_ROOM
+        WHERE ADDR1 = #{addr1}
+          AND ADDR2 = #{addr2}
+        ORDER BY chat_room_id DESC
+            LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
 </mapper>

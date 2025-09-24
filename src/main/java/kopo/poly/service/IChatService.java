@@ -17,4 +17,9 @@ public interface IChatService {
     int insertMessage(ChatMessageDTO pDTO) throws Exception;
     List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception;
 
+    int getChatListCount() throws Exception;
+    List<ChatDTO> getChatListPaged(int offset, int pageSize) throws Exception;
+
+    int getChatListCountByAddr(String addr1, String addr2) throws Exception;
+    List<ChatDTO> getChatListByAddrPaged(String addr1, String addr2, int offset, int pageSize) throws Exception;
 }
