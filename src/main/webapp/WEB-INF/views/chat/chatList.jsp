@@ -149,18 +149,33 @@
     </div>
 </div>
 
-<div style="text-align:center; margin-top:20px;">
+<!-- 페이지네이션 -->
+<div style="margin-top:40px; margin-bottom:30px; text-align:center;">
+    <style>
+        .pagination { display:inline-flex; list-style:none; padding:0; margin:0; }
+        .pagination li { margin:0 3px; }
+        .pagination a, .pagination span {
+            display:inline-block; padding:6px 12px;
+            border:1px solid #ddd; border-radius:4px;
+            text-decoration:none; color:#333; font-size:14px;
+        }
+        .pagination a:hover { background:#f0f0f0; }
+        .pagination .active span {
+            background:#4CAF50; color:#fff; border-color:#4CAF50;
+            font-weight:bold;
+        }
+        .pagination .disabled span { color:#aaa; border-color:#eee; }
+    </style>
+
     <%
         int currentPage = (int) request.getAttribute("currentPage");
         int totalPage = (int) request.getAttribute("totalPage");
         int startPage = (int) request.getAttribute("startPage");
         int endPage = (int) request.getAttribute("endPage");
 
-        // ✅ 컨트롤러에서 내려준 addr1, addr2 받기
         String addr1 = (String) request.getAttribute("addr1");
         String addr2 = (String) request.getAttribute("addr2");
 
-        // ✅ 검색조건 있을 때만 쿼리스트링 생성
         String queryBase = "";
         if (addr1 != null && !addr1.isEmpty() && addr2 != null && !addr2.isEmpty()) {
             queryBase = "addr1=" + java.net.URLEncoder.encode(addr1, "UTF-8")
@@ -168,36 +183,50 @@
         }
     %>
 
-    <!-- 이전 버튼 -->
-    <% if (currentPage > 1) { %>
-    <a href="?<%=queryBase%>page=<%=currentPage-1%>">이전</a>
-    <% } %>
+    <ul class="pagination">
+        <!-- 이전 버튼 -->
+        <li class="<%= (currentPage > 1) ? "" : "disabled" %>">
+            <% if (currentPage > 1) { %>
+            <a href="?<%=queryBase%>page=<%=currentPage-1%>">이전</a>
+            <% } else { %>
+            <span>이전</span>
+            <% } %>
+        </li>
 
-    <!-- 맨 앞 ... -->
-    <% if (startPage > 1) { %>
-    <a href="?<%=queryBase%>page=1">1</a> ...
-    <% } %>
+        <!-- 맨 앞 ... -->
+        <% if (startPage > 1) { %>
+        <li><a href="?<%=queryBase%>page=1">1</a></li>
+        <li><span>...</span></li>
+        <% } %>
 
-    <!-- 페이지 번호 -->
-    <% for (int i = startPage; i <= endPage; i++) {
-        if (i == currentPage) { %>
-    <span style="font-weight:bold; color:#4CAF50;"><%=i%></span>
-    <%     } else { %>
-    <a href="?<%=queryBase%>page=<%=i%>"><%=i%></a>
-    <%     }
-    } %>
+        <!-- 페이지 번호 -->
+        <% for (int i = startPage; i <= endPage; i++) { %>
+        <li class="<%= (i == currentPage) ? "active" : "" %>">
+            <% if (i == currentPage) { %>
+            <span><%=i%></span>
+            <% } else { %>
+            <a href="?<%=queryBase%>page=<%=i%>"><%=i%></a>
+            <% } %>
+        </li>
+        <% } %>
 
-    <!-- 맨 끝 ... -->
-    <% if (endPage < totalPage) { %>
-    ... <a href="?<%=queryBase%>page=<%=totalPage%>"><%=totalPage%></a>
-    <% } %>
+        <!-- 맨 끝 ... -->
+        <% if (endPage < totalPage) { %>
+        <li><span>...</span></li>
+        <li><a href="?<%=queryBase%>page=<%=totalPage%>"><%=totalPage%></a></li>
+        <% } %>
 
-    <!-- 다음 버튼 -->
-    <% if (currentPage < totalPage) { %>
-    <a href="?<%=queryBase%>page=<%=currentPage+1%>">다음</a>
-    <% } %>
-
+        <!-- 다음 버튼 -->
+        <li class="<%= (currentPage < totalPage) ? "" : "disabled" %>">
+            <% if (currentPage < totalPage) { %>
+            <a href="?<%=queryBase%>page=<%=currentPage+1%>">다음</a>
+            <% } else { %>
+            <span>다음</span>
+            <% } %>
+        </li>
+    </ul>
 </div>
+
 
 
 <script>

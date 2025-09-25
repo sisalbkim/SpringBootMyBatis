@@ -93,7 +93,15 @@
 
     <!-- 전체 목록 페이징 -->
     <select id="getChatListPaged" resultType="kopo.poly.dto.ChatDTO">
-        SELECT *
+        SELECT
+            chat_room_id AS roomId,
+            room_name    AS roomName,
+            addr1,
+            addr2,
+            reg_id       AS regId,
+            reg_dt       AS regDt,
+            user_id      AS userId,
+            user_count   AS userCount
         FROM CHAT_ROOM
         ORDER BY chat_room_id DESC
             LIMIT #{pageSize} OFFSET #{offset}
@@ -109,10 +117,18 @@
 
     <!-- 조건별 페이징 -->
     <select id="getChatListByAddrPaged" resultType="kopo.poly.dto.ChatDTO">
-        SELECT *
+        SELECT
+            chat_room_id AS roomId,
+            room_name    AS roomName,
+            addr1,
+            addr2,
+            reg_id       AS regId,
+            reg_dt       AS regDt,
+            user_id      AS userId,
+            user_count   AS userCount
         FROM CHAT_ROOM
-        WHERE ADDR1 = #{addr1}
-          AND ADDR2 = #{addr2}
+        WHERE addr1 = #{addr1}
+          AND addr2 = #{addr2}
         ORDER BY chat_room_id DESC
             LIMIT #{pageSize} OFFSET #{offset}
     </select>
