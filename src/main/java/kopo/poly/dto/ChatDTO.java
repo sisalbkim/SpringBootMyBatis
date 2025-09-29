@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ChatDTO {
-    private int roomId;      // AUTO_INCREMENT 기본키
+    private Integer roomId;      // AUTO_INCREMENT 기본키
     private String roomName; // 채팅방 이름
     private String regId;    // 등록자 ID
     private String regDt;    // 등록일자
