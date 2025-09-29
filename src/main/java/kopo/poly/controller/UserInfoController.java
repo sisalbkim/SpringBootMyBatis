@@ -11,11 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -56,26 +55,6 @@ UserInfoController {
 
     }
 
-    @ResponseBody
-    @PostMapping(value = "getEmailExists")
-    public UserInfoDTO getEmailExists(HttpServletRequest request) throws Exception{
-
-        log.info("{}.getEmailExists start!", this.getClass().getName());
-
-        String email = CmmUtil.nvl(request.getParameter("email"));
-
-        log.info("email = {}", email);
-
-        UserInfoDTO pDTO = new UserInfoDTO();
-        pDTO.setEmail(EncryptUtil.encAES128CBC(email));
-
-        UserInfoDTO rDTO = Optional.ofNullable(userInfoService.getEmailExists(pDTO)).orElseGet(UserInfoDTO::new);
-
-        log.info("{}.getEmailExists End!", this.getClass().getName());
-
-        return rDTO;
-
-    }
 
     @ResponseBody
     @PostMapping(value = "insertUserInfo")
@@ -147,14 +126,6 @@ UserInfoController {
         return dto;
     }
 
-    @GetMapping(value = "login")
-    public String login() {
-        log.info("{}.login Start!", this.getClass().getName());
-
-        log.info("{}.login End!", this.getClass().getName());
-
-        return "user/login";
-    }
 
     @ResponseBody
     @PostMapping(value = "loginProc")
@@ -343,9 +314,67 @@ UserInfoController {
 
     @GetMapping("/loginModal")
     public String loginModal() {
-        return "user/loginModal"; // /WEB-INF/jsp/user/loginModal.jsp (prefix/suffix로 렌더)
+        // /WEB-INF/views/user/modal/loginModal.jsp
+        return "user/loginModal";
     }
 
+    @GetMapping("/modal/login")
+    public String login() {
+        // /WEB-INF/views/user/modal/login.jsp
+        return "user/modal/login";
+    }
+
+    @GetMapping("/modal/userRegForm1")
+    public String signup1() {
+        // /WEB-INF/views/user/modal/signup.jsp
+        return "/user/modal/userRegForm1";
+    }
+
+    @GetMapping("/modal/userRegForm2")
+    public String signup2() {
+        // /WEB-INF/views/user/modal/signup.jsp
+        return "user/modal/userRegForm2";
+    }
+
+    @GetMapping("/modal/recover")
+    public String recover() {
+        // /WEB-INF/views/user/modal/recover.jsp
+        return "user/modal/recover";
+    }
+
+    // 가정: 클래스 레벨에 @RequestMapping("/user")
+    @ResponseBody
+    @PostMapping("/getEmailExists")
+    public UserInfoDTO getEmailExists(HttpServletRequest req, HttpSession session) throws Exception {
+
+        String emailPlain = CmmUtil.nvl(req.getParameter("email")); // 사용자가 입력한 원본 이메일
+        UserInfoDTO pDTO = new UserInfoDTO();
+        // DB가 암호화 저장이면 암호화해서 조회
+        pDTO.setEmail(EncryptUtil.encAES128CBC(emailPlain));
+
+        UserInfoDTO rDTO = userInfoService.getEmailExists(pDTO); // ← 여기서 rDTO.authNumber가 세팅됨(미가입일 때)
+
+        // ★★★ 여기! 서비스 호출 "바로 다음"에서 세션에 저장 ★★★
+        if ("N".equals(CmmUtil.nvl(rDTO.getExistsYn()))) {
+            String key = "EMAIL_CODE:" + emailPlain.toLowerCase();
+            session.setAttribute(key, String.valueOf(rDTO.getAuthNumber()));
+            session.setMaxInactiveInterval(300); // 5분 유효 (원하는 값으로)
+        }
+
+        return rDTO;
+    }
+
+    @ResponseBody
+    @PostMapping("/verifyEmailCode")
+    public Map<String, Object> verifyEmailCode(@RequestParam String email,
+                                               @RequestParam String code,
+                                               HttpSession session) {
+        String key = "EMAIL_CODE:" + email.toLowerCase();
+        String saved = (String) session.getAttribute(key);
+        boolean ok = saved != null && saved.equals(code);
+        if (ok) session.removeAttribute(key); // 한번 쓰고 지우기(선택)
+        return Map.of("ok", ok);
+    }
 
     // ✅ 채팅방 목록 페이지
     @GetMapping(value = "/chat/list")

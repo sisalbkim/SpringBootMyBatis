@@ -95,7 +95,7 @@
         /* 중앙 로고 컨테이너: 화면 가운데로 */
         .logo img {
             height: 200px;       /* 크기 */
-            margin-top: 0px;   /* 위로 올림 */
+            margin-top: 0;   /* 위로 올림 */
             display: block;
             margin-left: auto;
             margin-right: auto;  /* 가운데 정렬 */
@@ -191,6 +191,10 @@
         /* 유저 메뉴 전용 오프셋 */
         .navitem.nav-user { --icon-dy: -40px; }                 /* 아이콘 ↑ */
         .navitem.nav-user .nav-user-label { transform: translateY(-40px) !important; }  /* 글자 ↑ */
+        .nav-user img,
+        .nav-user span {
+            cursor: pointer;
+        }
 
     </style>
 
@@ -227,7 +231,7 @@
         <!-- 🔥 트리거 부분 (아이콘 + 아이디) -->
         <div class="account-trigger">
             <img src="/images/user.png" alt="">
-            <span class="nav-user-label"><%= (String)session.getAttribute("SS_USER_NAME") %> 님</span>
+            <span class="nav-user-label"><%= (String)session.getAttribute("SS_USER_ID") %> 님</span>
         </div>
 
         <!-- 🔥 드롭다운 메뉴 -->
@@ -267,65 +271,7 @@
     }
 </script>
 
-<script>
-    window.openLogin = function(){
-        const URL = '/user/loginModal'; // 컨트롤러 매핑 주소
-        $('#modal-root').load(URL, function(resp, status){
-            if(status !== 'success'){ alert('모달 로드 실패: ' + URL); return; }
-
-            const $m = $('#authModal');
-            $m.css('display','flex');
-            $('body').css('overflow','hidden');
-
-            // 닫기
-            function close(){
-                $m.remove();
-                $('body').css('overflow','');
-                $(document).off('keydown.auth');
-            }
-            $m.on('click', '.modal-close, .modal-overlay', close);
-            $(document).on('keydown.auth', e => { if(e.key==='Escape') close(); });
-
-            // 🔽🔽🔽 여기부터 '로그인 버튼/엔터키' 등 모달 내부 동작 바인딩
-            $m.on('click', '#btnLogin', function(){
-                const f = $m.find('#loginForm')[0];
-                if (!f.userId.value.trim()) { alert('아이디를 입력하세요.'); f.userId.focus(); return; }
-                if (!f.password.value.trim()) { alert('비밀번호를 입력하세요.'); f.password.focus(); return; }
-
-                const $btn = $(this).prop('disabled', true).text('로그인 중…');
-                $.ajax({
-                    url:'/user/loginProc', type:'post', dataType:'json', data: $(f).serialize(),
-                    complete: () => $btn.prop('disabled', false).text('로그인'),
-                    success: function(json){
-                        if(json.result === 1){
-                            alert(json.msg);
-                            close();
-                            location.href = '/';
-                        }else{
-                            alert(json.msg);
-                            $m.find('#userId').focus();
-                        }
-                    }
-                });
-            });
-
-            // 엔터키로도 로그인
-            $m.on('keydown', '#loginForm input', function(e){
-                if(e.key === 'Enter'){ e.preventDefault(); $m.find('#btnLogin').click(); }
-            });
-
-            // 회원가입/찾기(일단 페이지 이동)
-            $m.on('click', '#btnUserReg',      () => { close(); location.href='/user/userRegForm'; });
-            $m.on('click', '#btnSearchUserId', () => { close(); location.href='/user/searchUserId'; });
-            $m.on('click', '#btnSearchPassword',() => { close(); location.href='/user/searchPassword'; });
-            // 🔼🔼🔼 여기까지
-
-            // 첫 포커스
-            $m.find('input,button,select,textarea').first().trigger('focus');
-        });
-    };
-</script>
-
+<script src="/js/auth.js"></script>
 
 <div id="modal-root"></div>
 
