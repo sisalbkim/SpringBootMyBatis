@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IMailMapper">
+    <insert id="insertMail" parameterType="MailDTO">
+        INSERT INTO MAIL_INFO
+        (
+         SAVE_TO_MAIL, SAVE_TITLE, SAVE_CONTENTS, SAVE_TIME
+        )
+        VALUES (
+                #{toMail}, #{title}, #{contents}, NOW()
+               )
+    </insert>
+    
+    <select id="getMailList" resultType="MailDTO">
+        SELECT SAVE_TO_MAIL, SAVE_TITLE, SAVE_CONTENTS, SAVE_TIME
+        FROM MAIL_INFO
+        ORDER BY SAVE_TIME DESC
+    </select>
+
+</mapper>

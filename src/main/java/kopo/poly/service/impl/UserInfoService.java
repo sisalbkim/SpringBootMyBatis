@@ -66,7 +66,9 @@ public class UserInfoService implements IUserInfoService {
             dto = null;
 
             rDTO.setAuthNumber(authNumber);
+
         }
+
 
         log.info("{}.emailAuth End!", this.getClass().getName());
 
@@ -151,4 +153,6 @@ public class UserInfoService implements IUserInfoService {
         return success;
 
     }
+
+
 }
