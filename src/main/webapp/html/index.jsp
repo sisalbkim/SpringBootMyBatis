@@ -285,11 +285,21 @@
             }
         }).open();
     }
+
+    function openLogin() {
+        $("#authModal").css("display", "flex").addClass("is-ready");
+    }
+    $(".modal-close, .modal-overlay").on("click", function () {
+        $("#authModal").removeClass("is-ready").hide();
+    });
+
 </script>
 
 <script src="/js/auth.js"></script>
 
 <div id="modal-root"></div>
+
+<%@ include file="../WEB-INF/views/common/authModal.jsp" %>
 
 </body>
 </html>

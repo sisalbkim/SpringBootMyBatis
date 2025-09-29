@@ -171,9 +171,10 @@
     </a>
 
     <% if (session.getAttribute("SS_USER_ID") == null) { %>
-    <a class="navitem nav-user" href="/user/login">
+    <a class="navitem nav-user" href="javascript:openLogin()">
         <img src="/images/user.png" alt=""><span>로그인</span>
     </a>
+
     <% } else { %>
     <div class="navitem nav-user">
         <img src="/images/user.png" alt="">
@@ -221,7 +222,10 @@
     </div>
 
     <%  for (kopo.poly.dto.ChatDTO room : chatList) { %>
-    <div class="chat-room" onclick="location.href='/chat/room/<%=room.getRoomId()%>'">
+    <div class="chat-room"
+         onclick="<%= (session.getAttribute("SS_USER_ID") == null)
+                ? "openLogin()"
+                : "location.href='/chat/room/" + room.getRoomId() + "'" %>">
         <div class="chat-info">
             <div class="chat-avatar"></div>
             <div class="chat-text">
@@ -231,7 +235,9 @@
         </div>
         <div class="chat-menu">⋯</div>
     </div>
-    <%  } } %>
+    <%  } %>
+    <%  } %> <!-- chatList if/else 닫기 -->
+
 </div>
 
 <!-- ✅ 모달 -->
@@ -345,7 +351,18 @@
         $("#createRoomModal").css("display", "flex");
     }
     function closeModal() { $("#createRoomModal").hide(); }
+
+    function openLogin() {
+        $("#authModal").css("display", "flex").addClass("is-ready");
+    }
+    $(".modal-close, .modal-overlay").on("click", function () {
+        $("#authModal").removeClass("is-ready").hide();
+    });
+
 </script>
+<script src="/js/auth.js"></script>
+<div id="modal-root"></div>
+<%@ include file="/WEB-INF/views/common/authModal.jsp" %>
 
 </body>
 </html>
