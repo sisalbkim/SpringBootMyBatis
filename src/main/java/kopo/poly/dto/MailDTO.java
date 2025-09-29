@@ -9,7 +9,9 @@ import lombok.ToString;
 @ToString
 public class MailDTO {
 
+    private int mailId;
     String toMail;
     String title;
     String contents;
+    String sendDt;
 }

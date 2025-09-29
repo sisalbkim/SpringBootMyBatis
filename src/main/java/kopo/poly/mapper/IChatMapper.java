@@ -3,6 +3,7 @@ package kopo.poly.mapper;
 import kopo.poly.dto.ChatDTO;
 import kopo.poly.dto.ChatMessageDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ public interface IChatMapper {
     // 채팅방 목록
     List<ChatDTO> getChatList() throws Exception;
 
-    // 주소로 채팅방 검색
-    List<ChatDTO> getChatListByAddr(String addr) throws Exception;
+    List<ChatDTO> getChatListByAddr(@Param("addr1") String addr1,
+                                    @Param("addr2") String addr2) throws Exception;
 
     // 방 생성
     int createRoom(ChatDTO pDTO) throws Exception;
@@ -29,4 +30,16 @@ public interface IChatMapper {
     int insertMessage(ChatMessageDTO pDTO) throws Exception;
 
     List<ChatMessageDTO> getMessageList(int chatRoomId) throws Exception;
+
+    // ✅ 페이징용
+    int getChatListCount();
+    List<ChatDTO> getChatListPaged(@Param("offset") int offset,
+                                   @Param("pageSize") int pageSize);
+
+    int getChatListCountByAddr(@Param("addr1") String addr1,
+                               @Param("addr2") String addr2);
+    List<ChatDTO> getChatListByAddrPaged(@Param("addr1") String addr1,
+                                         @Param("addr2") String addr2,
+                                         @Param("offset") int offset,
+                                         @Param("pageSize") int pageSize);
 }
