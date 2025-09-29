@@ -5,34 +5,31 @@
 
 <mapper namespace="kopo.poly.mapper.IChatMapper">
 
-    <!-- 전체 채팅방 목록 -->
+    <!-- 전체 목록 -->
     <select id="getChatList" resultType="kopo.poly.dto.ChatDTO">
-        SELECT
-            chat_room_id AS roomId,
-            room_name    AS roomName,
-            reg_id       AS regId,
-            reg_dt       AS regDt,
-            addr1        AS addr1,
-            addr2        AS addr2,
-            user_id      AS userId,
-            user_count   AS userCount
+        SELECT chat_room_id AS roomId,
+               room_name    AS roomName,
+               addr1,
+               addr2,
+               reg_id       AS regId,
+               reg_dt,
+               user_count   AS userCount
         FROM CHAT_ROOM
         ORDER BY reg_dt DESC
     </select>
 
-    <!-- 주소로 채팅방 검색 -->
-    <select id="getChatListByAddr" parameterType="string" resultType="kopo.poly.dto.ChatDTO">
-        SELECT
-            chat_room_id AS roomId,
-            room_name    AS roomName,
-            reg_id       AS regId,
-            reg_dt       AS regDt,
-            addr1        AS addr1,
-            addr2        AS addr2,
-            user_id      AS userId,
-            user_count   AS userCount
+    <!-- 주소 조건 검색 -->
+    <select id="getChatListByAddr" resultType="kopo.poly.dto.ChatDTO">
+        SELECT chat_room_id AS roomId,
+               room_name    AS roomName,
+               addr1,
+               addr2,
+               reg_id       AS regId,
+               reg_dt,
+               user_count   AS userCount
         FROM CHAT_ROOM
-        WHERE CONCAT(IFNULL(addr1,''), ' ', IFNULL(addr2,'')) LIKE CONCAT('%', #{addr}, '%')
+        WHERE addr1 = #{addr1}
+          AND addr2 = #{addr2}
         ORDER BY reg_dt DESC
     </select>
 
@@ -86,6 +83,54 @@
         FROM CHAT_MESSAGE
         WHERE chat_room_id = #{chatRoomId}
         ORDER BY send_dt ASC
+    </select>
+
+
+    <!-- 전체 카운트 -->
+    <select id="getChatListCount" resultType="int">
+        SELECT COUNT(*) FROM CHAT_ROOM
+    </select>
+
+    <!-- 전체 목록 페이징 -->
+    <select id="getChatListPaged" resultType="kopo.poly.dto.ChatDTO">
+        SELECT
+            chat_room_id AS roomId,
+            room_name    AS roomName,
+            addr1,
+            addr2,
+            reg_id       AS regId,
+            reg_dt       AS regDt,
+            user_id      AS userId,
+            user_count   AS userCount
+        FROM CHAT_ROOM
+        ORDER BY chat_room_id DESC
+            LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 조건별 카운트 -->
+    <select id="getChatListCountByAddr" resultType="int">
+        SELECT COUNT(*)
+        FROM CHAT_ROOM
+        WHERE ADDR1 = #{addr1}
+          AND ADDR2 = #{addr2}
+    </select>
+
+    <!-- 조건별 페이징 -->
+    <select id="getChatListByAddrPaged" resultType="kopo.poly.dto.ChatDTO">
+        SELECT
+            chat_room_id AS roomId,
+            room_name    AS roomName,
+            addr1,
+            addr2,
+            reg_id       AS regId,
+            reg_dt       AS regDt,
+            user_id      AS userId,
+            user_count   AS userCount
+        FROM CHAT_ROOM
+        WHERE addr1 = #{addr1}
+          AND addr2 = #{addr2}
+        ORDER BY chat_room_id DESC
+            LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
 </mapper>
