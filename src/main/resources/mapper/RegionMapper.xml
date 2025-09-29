@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IRegionMapper">
+
+    <!-- 시/도 목록 -->
+    <select id="getSidoList" resultType="string">
+        SELECT DISTINCT sido
+        FROM REGION
+        ORDER BY sido
+    </select>
+
+    <!-- 시군구 목록 -->
+    <select id="getSigunguList" parameterType="string" resultType="string">
+        SELECT DISTINCT sigungu
+        FROM REGION
+        WHERE sido = #{sido}
+        ORDER BY sigungu
+    </select>
+
+    <!-- 읍면동 목록 -->
+    <select id="getDongList" parameterType="map" resultType="string">
+        SELECT DISTINCT dong
+        FROM REGION
+        WHERE sido = #{sido}
+          AND sigungu = #{sigungu}
+        ORDER BY dong
+    </select>
+
+</mapper>
