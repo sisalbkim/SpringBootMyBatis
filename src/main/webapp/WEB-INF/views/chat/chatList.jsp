@@ -158,37 +158,13 @@
 </head>
 <body>
 
-<!-- ✅ 상단바 -->
-<header class="topbar">
-    <a class="navitem nav-home" href="/html/index.jsp">
-        <img src="/images/home.png" alt=""><span>메인 화면</span>
-    </a>
-    <a class="navitem nav-chat" href="/chat/list">
-        <img src="/images/door.png" alt=""><span>채팅</span>
-    </a>
-    <a class="navitem nav-setting" href="/settings">
-        <img src="/images/setting.png" alt=""><span>설정</span>
-    </a>
 
-    <% if (session.getAttribute("SS_USER_ID") == null) { %>
-    <a class="navitem nav-user" href="javascript:openLogin()">
-        <img src="/images/user.png" alt=""><span>로그인</span>
-    </a>
 
-    <% } else { %>
-    <div class="navitem nav-user">
-        <img src="/images/user.png" alt="">
-        <span><%= (String)session.getAttribute("SS_USER_NAME") %> 님</span>
-        <a href="/user/logout" style="margin-left:10px; font-size:14px; color:#333;">로그아웃</a>
-    </div>
-    <% } %>
-
-    <div class="brand-box">
-        <img class="brand-img" src="/images/logo.png" alt="Atalk">
-    </div>
-</header>
 
 <!-- ✅ 본문 -->
+
+<%@ include file="/WEB-INF/views/common/header.jsp" %>
+
 <div class="container">
     <!-- 지역 선택 -->
     <div id="region-select">
