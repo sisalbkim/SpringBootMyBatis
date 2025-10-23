@@ -33,4 +33,10 @@ public class UserInfoDTO {
     private String existsYn;
 
     private int authNumber;
+
+    private String profileImageUrl; // USER_INFO.PROFILE_IMAGE_URL
+
+    private Boolean notifyEmail;    // USER_INFO.NOTIFY_EMAIL (TINYINT(1) ↔ Boolean 매핑)
+
+    private String updatedAt;       // USER_INFO.UPDATED_AT (문자열로 받는다면 포맷은 DB 설정에 따름)
 }

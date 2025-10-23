@@ -115,7 +115,7 @@
             <span class="nav-user-label"><%= (String)session.getAttribute("SS_USER_ID") %> 님</span>
         </div>
         <div class="account-dropdown">
-            <a href="/user/myProfile">My프로필</a>
+            <a href="/mypage">My프로필</a>
             <a href="/user/logout">로그아웃</a>
         </div>
     </div>

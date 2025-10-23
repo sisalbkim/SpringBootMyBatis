@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IMyActivityMapper">
+
+    <!-- ✅ 내가 참여한 채팅방 목록 (최근 메시지 기준 내림차순) -->
+    <select id="selectMyChatRooms" resultType="kopo.poly.dto.ChatRoomActivityDTO">
+        SELECT
+            r.chat_room_id   AS roomId,
+            r.room_name      AS roomName,
+            m.join_dt        AS joinedAt,
+            /* 참여 인원 수 */
+            (SELECT COUNT(*)
+             FROM CHAT_MEMBER cm
+             WHERE cm.chat_room_id = r.chat_room_id) AS memberCnt,
+            /* 최근 메시지 내용 및 시간 */
+            lm.message       AS lastMsg,
+            lm.send_dt       AS lastMsgAt
+        FROM CHAT_MEMBER m
+                 JOIN CHAT_ROOM r
+                      ON r.chat_room_id = m.chat_room_id
+            /* 각 방의 최신 메시지 1건 */
+                 LEFT JOIN (
+            SELECT x.chat_room_id, x.message, x.send_dt
+            FROM CHAT_MESSAGE x
+                     JOIN (
+                SELECT chat_room_id, MAX(send_dt) AS max_dt
+                FROM CHAT_MESSAGE
+                GROUP BY chat_room_id
+            ) t
+                          ON t.chat_room_id = x.chat_room_id
+                              AND t.max_dt = x.send_dt
+        ) lm
+                           ON lm.chat_room_id = r.chat_room_id
+        WHERE m.user_id = #{userId}
+        ORDER BY COALESCE(lm.send_dt, r.reg_dt) DESC
+            LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <!-- ✅ 내가 속한 채팅방 수 -->
+    <select id="countMyChatRooms" resultType="int">
+        SELECT COUNT(DISTINCT m.chat_room_id)
+        FROM CHAT_MEMBER m
+        WHERE m.user_id = #{userId}
+    </select>
+
+</mapper>
