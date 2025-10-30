@@ -9,9 +9,12 @@ import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,6 +26,8 @@ public class UserInfoService implements IUserInfoService {
     private final IUserInfoMapper userInfoMapper;
 
     private final IMailService mailService;
+
+    private static final String baseUrl = "http://localhost:11000";
 
     @Override
     public UserInfoDTO getUserIdExists(UserInfoDTO pDTO) throws Exception{
@@ -154,5 +159,65 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    @Override
+    public int sendResetLink(String plainEmail) throws Exception {
+        log.info("sendResetLink start, email={}", plainEmail);
 
+        String encEmail = EncryptUtil.encAES128CBC(plainEmail);
+
+        UserInfoDTO u = Optional.ofNullable(userInfoMapper.getUserByEmail(encEmail)).orElse(null);
+        if (u == null || CmmUtil.nvl(u.getUserId()).isEmpty()) {
+            log.info("email not found, but respond ok");
+            return 1;
+        }
+
+        String rawToken  = EncryptUtil.generateToken();
+        String tokenHash = EncryptUtil.hashSHA256(rawToken);
+
+        String expiresAt = java.time.LocalDateTime.now()
+                .plusMinutes(30)
+                .toString().replace('T',' ');
+
+        userInfoMapper.insertToken(u.getUserId(), tokenHash, expiresAt);
+
+        String userId = u.getUserId();
+
+        String link = baseUrl + "/user/resetPassword?token=" + rawToken;
+
+        MailDTO m = new MailDTO();
+        m.setToMail(plainEmail);
+        m.setTitle("[Atalk] 아이디 및 비밀번호 재설정 안내");
+        String contents = "비밀번호를 분실시에는 재설정 해주셔야 됩니다.<br><br>" +
+                "아이디: <strong>" + userId + "</strong><br>" +
+                "비밀번호 재설정 주소: <a href=\"" + link + "\">" + link + "</a>";
+        m.setContents(contents);
+
+        mailService.doSendMail(m);
+
+        log.info("sendResetLink end");
+        return 1;
+    }
+
+    @Override
+    public String verifyResetToken(String token) throws Exception {
+        String hash = EncryptUtil.hashSHA256(token);
+        Map<String,Object> row = userInfoMapper.getValidToken(hash);
+        if (row == null) return null;
+        return CmmUtil.nvl((String) row.get("USER_ID"));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int resetPassword(String token, String newPw) throws Exception {
+        String userId = verifyResetToken(token);
+        if (CmmUtil.nvl(userId).isEmpty()) return 0;
+
+        UserInfoDTO p = new UserInfoDTO();
+        p.setUserId(userId);
+        p.setPassword(EncryptUtil.encHashSHA256(newPw));
+        userInfoMapper.updatePassword(p);
+
+        userInfoMapper.consumeToken(EncryptUtil.hashSHA256(token));
+        return 1;
+    }
 }

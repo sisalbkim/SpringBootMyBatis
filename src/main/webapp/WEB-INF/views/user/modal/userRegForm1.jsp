@@ -19,7 +19,7 @@
 
 <style>
     /* 기본적으로는 한글/영문 전부 산세리프 */
-    #authModal .form-title {
+    #view-signup1 .form-title {
         font-family: "Noto Sans KR", system-ui, sans-serif;
         font-weight: 700;
 
@@ -114,9 +114,9 @@
 
     /* 메인 버튼(확인/다음) */
     #view-signup1 .btn-primary{
-        width: 160px; height: 38px; margin-top: 8px;
+        width: 160px; height: 36px; margin-top: 8px;
         border: 0; border-radius: 10px;
-        background:#2E5E4E; color:#fff; font-weight: 800;
+        background:#2E5E4E; color:#fff; font-weight: 700;
         display:flex; align-items:center; justify-content:center; cursor:pointer;
     }
     #view-signup1 .btn-primary:hover{ filter: brightness(.96); }

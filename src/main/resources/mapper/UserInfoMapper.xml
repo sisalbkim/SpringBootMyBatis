@@ -73,4 +73,31 @@
         SET PASSWORD = #{password}
         WHERE USER_ID = #{userId}
     </update>
+
+    <insert id="insertToken">
+        INSERT INTO RESET_PW_TOKEN (USER_ID, TOKEN_HASH, EXPIRES_AT)
+        VALUES (#{userId}, #{tokenHash}, #{expiresAt})
+    </insert>
+
+    <select id="getValidToken" resultType="map">
+        SELECT TOKEN_ID, USER_ID, EXPIRES_AT, USED_YN
+        FROM RESET_PW_TOKEN
+        WHERE TOKEN_HASH = #{tokenHash}
+          AND USED_YN = 'N'
+          AND EXPIRES_AT > CURRENT_TIMESTAMP
+            LIMIT 1
+    </select>
+
+    <update id="consumeToken">
+        UPDATE RESET_PW_TOKEN
+        SET USED_YN = 'Y'
+        WHERE TOKEN_HASH = #{tokenHash}
+    </update>
+
+    <select id="getUserByEmail" parameterType="string" resultType="UserInfoDTO">
+        SELECT USER_ID, EMAIL
+        FROM USER_INFO
+        WHERE EMAIL = #{email}
+            LIMIT 1
+    </select>
 </mapper>

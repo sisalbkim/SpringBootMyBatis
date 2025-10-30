@@ -12,7 +12,8 @@ window.openLogin = function () {
         login:   '/user/modal/login',
         signup1: '/user/modal/userRegForm1',
         signup2: '/user/modal/userRegForm2',
-        recover: '/user/modal/recover'
+        recover1: '/user/modal/recover1', // 추가
+        recover2: '/user/modal/recover2'  // 추가
     };
 
     // 쉘 로드
@@ -74,7 +75,7 @@ window.openLogin = function () {
                 injectPanelStyles(name, $doc);
                 let $next = $doc.filter('section.panel').first();
                 if (!$next.length) $next = $doc.find('section.panel').first();
-                if (!$next.length) $next = $('<section class="panel"></section>').append(doc);
+                if (!$next.length) $next = $('<section class="panel"></section>').append($doc);
                 $next.attr('id', 'view-'+name);
                 $stack.children(`#view-${name}, .panel[data-view="${name}"]`).remove();
                 cache[name] = $next;
@@ -232,6 +233,70 @@ window.openLogin = function () {
                 }else{ alert(dto.msg || '가입 실패'); }
             }).fail(()=> alert('서버 통신 오류'))
                 .always(()=> $btn.prop('disabled', false).text('계정 만들기'));
+        });
+
+        // '아이디/비밀번호 찾기' 버튼 클릭 시 recover1 패널 보여주기
+        $m.on('click', '#btnFindAccount', () => showPanel('recover1'));
+
+// recover1 패널의 '링크 전송' 버튼 클릭 시 AJAX 통신
+        $m.on('click', '#btnSendLink', function() {
+            const email = $('#recover_email').val().trim();
+            if (!email) { alert('이메일을 입력하세요.'); return; }
+
+            const $btn = $(this).prop('disabled', true).text('전송 중…');
+            $.post('/user/sendResetLink', { email })
+                // auth.js의 #btnSendLink 클릭 이벤트
+                // auth.js의 #btnSendLink 클릭 이벤트
+                .done(json => {
+                    if (json.ok) {
+                        // 1. 빈 그릇('recover2' 패널)을 먼저 보여주고
+                        showPanel('recover2');
+
+                        // 2. 서버가 보내준 메시지(json.msg)를
+                        //    'info-text'라는 이름의 그릇에 넣어줍니다.
+                        setTimeout(() => {
+                            $('#view-recover2 .info-text').html(json.msg.replace(/\n/g, '<br>'));
+                        }, 50);
+
+                    } else {
+                        alert(json.msg || '전송에 실패했습니다.');
+                    }
+                })
+                .fail(() => alert('서버 요청 실패'))
+                .always(() => $btn.prop('disabled', false).text('확인완료'));
+        });
+
+        // auth.js에 추가
+
+// '아이디/비밀번호 찾기' 폼(#recoverForm) 안에서 엔터를 누르면,
+// 새로고침을 막고 '링크 전송' 버튼(#btnSendLink)을 클릭한 것처럼 동작시킴
+        $m.on('keydown', '#recoverForm input', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // 1. 브라우저의 새로고침 본능을 막습니다.
+                $m.find('#btnSendLink').click(); // 2. 버튼을 대신 클릭해줍니다.
+            }
+        });
+
+        // auth.js에 추가
+
+// 회원가입 1단계 폼(#signupStep1Form)에서 엔터를 누르면,
+// '확인' 버튼(#btnToStep2)을 클릭한 것처럼 동작시킴
+        $m.on('keydown', '#signupStep1Form input', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                $m.find('#btnToStep2').click();
+            }
+        });
+
+        // auth.js에 추가
+
+// 회원가입 마지막 단계 폼(#signupStep2Form)에서 엔터를 누르면,
+// 새로고침을 막고 '계정 생성' 버튼(#btnSignup)을 클릭한 것처럼 동작시킴
+        $m.on('keydown', '#signupStep2Form input', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                $m.find('#btnSignup').click();
+            }
         });
 
         showPanel('login');

@@ -336,11 +336,47 @@ UserInfoController {
         return "user/modal/userRegForm2";
     }
 
-    @GetMapping("/modal/recover")
-    public String recover() {
-        // /WEB-INF/views/user/modal/recover.jsp
-        return "user/modal/recover";
+    @GetMapping("/modal/recover1")
+    public String recover1() {
+        // /WEB-INF/views/user/modal/recover1.jsp
+        return "user/modal/recover1";
     }
+
+    @GetMapping("/modal/recover2")
+    public String recover2() {
+        // /WEB-INF/views/user/modal/recover2.jsp
+        return "user/modal/recover2";
+    }
+
+    // 1) recover1에서: 이메일로 재설정 링크 보내기 (AJAX)
+    @ResponseBody
+    @PostMapping("/sendResetLink")
+    public Map<String,Object> sendResetLink(@RequestParam String email) throws Exception {
+        userInfoService.sendResetLink(email);   // 보안상 항상 ok
+        return Map.of("ok", true, "msg", "재설정 링크를 이메일로 보냈습니다.");
+    }
+
+    // 2) 메일 링크 클릭 진입점: 토큰 검증 후 recover2.jsp 렌더
+    @GetMapping("/resetPassword")
+    public String resetPasswordPage(@RequestParam("token") String token, ModelMap model) throws Exception {
+        String userId = userInfoService.verifyResetToken(token);
+        if (userId == null || userId.isEmpty()) {
+            model.addAttribute("msg", "유효하지 않거나 만료된 링크입니다.");
+            return "user/resetFail";                 // 간단한 에러 페이지
+        }
+        model.addAttribute("token", token);          // recover2.jsp에서 hidden으로 사용
+        return "user/modal/recover3";                // 기존 JSP 재사용
+    }
+
+    // 3) recover2에서: 실제 비밀번호 변경 (AJAX)
+    @ResponseBody
+    @PostMapping("/updatePassword")
+    public Map<String,Object> updatePassword(@RequestParam String token,
+                                             @RequestParam String newPassword) throws Exception {
+        int ok = userInfoService.resetPassword(token, newPassword);
+        return Map.of("ok", ok == 1);
+    }
+
 
     // 가정: 클래스 레벨에 @RequestMapping("/user")
     @ResponseBody
@@ -398,9 +434,5 @@ UserInfoController {
 
         return "chat/chatList"; // chatList.jsp 로 이동
     }
-
-
-
-
 
 }

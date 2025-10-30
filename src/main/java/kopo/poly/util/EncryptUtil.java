@@ -72,6 +72,25 @@ public class EncryptUtil {
         return new String(cipher.doFinal(textBytes), StandardCharsets.UTF_8);
     }
 
+    public static String generateToken() {
+        return java.util.UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static String hashSHA256(String str) {
+        try {
+            MessageDigest sh = MessageDigest.getInstance("SHA-256");
+            sh.update(str.getBytes(StandardCharsets.UTF_8));
+
+            byte[] byteData = sh.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte b : byteData) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
+    }
 
 
 }

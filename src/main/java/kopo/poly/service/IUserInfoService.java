@@ -16,5 +16,11 @@ public interface IUserInfoService {
 
     int newPasswordProc(UserInfoDTO pDTO) throws Exception;
 
+    int sendResetLink(String email) throws Exception;
+
+    String verifyResetToken(String token) throws Exception;
+
+    int resetPassword(String token, String newPw) throws Exception;
+
 
 }
